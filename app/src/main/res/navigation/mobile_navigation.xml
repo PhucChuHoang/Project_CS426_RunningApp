@@ -40,7 +40,7 @@
         tools:layout="@layout/fragment_achievements" />
     <fragment
         android:id="@+id/dontKnowFragment"
-        android:name="com.example.project_cs426_runningapp.DontKnowFragment"
+        android:name="com.example.project_cs426_runningapp.EventFragment"
         android:label="fragment_dont_know"
-        tools:layout="@layout/fragment_dont_know" />
+        tools:layout="@layout/fragment_event" />
 </navigation>
