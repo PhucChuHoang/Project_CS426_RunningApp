@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if(destination.id == R.id.onboardingFragment) {
+            if(destination.id == R.id.onboardingFragment || destination.id == R.id.logInFragment) {
                 navView.visibility = View.GONE
             } else {
                 navView.visibility = View.VISIBLE

@@ -29,9 +29,13 @@ class OnboardingFragment : Fragment() {
                 binding.joinCommunityButton -> {
                     findNavController().navigate(R.id.action_onboardingFragment_to_homeFragment)
                 }
+                binding.loginButton -> {
+                    findNavController().navigate(R.id.action_onboardingFragment_to_logInFragment)
+                }
             }
         }
         binding.joinCommunityButton.setOnClickListener(clickListener)
+        binding.loginButton.setOnClickListener(clickListener)
     }
 
     override fun onDestroy() {

@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_onboardingFragment_to_dontKnowFragment"
             app:destination="@id/dontKnowFragment" />
+        <action
+            android:id="@+id/action_onboardingFragment_to_logInFragment"
+            app:destination="@id/logInFragment" />
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
@@ -43,4 +46,9 @@
         android:name="com.example.project_cs426_runningapp.DontKnowFragment"
         android:label="fragment_dont_know"
         tools:layout="@layout/fragment_dont_know" />
+    <fragment
+        android:id="@+id/logInFragment"
+        android:name="com.example.project_cs426_runningapp.LogInFragment"
+        android:label="fragment_log_in"
+        tools:layout="@layout/fragment_log_in" />
 </navigation>
