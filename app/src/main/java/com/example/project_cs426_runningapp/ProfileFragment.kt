@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ListView
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,6 +22,9 @@ class ProfileFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    var array = arrayListOf(EventData("Object 1", true),
+        EventData("Object 2", true))
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -34,7 +38,15 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        val curView = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        val listView = curView.findViewById<ListView>(R.id.profile_list_event)
+
+        val adapter = EventAdapter(curView.context, array)
+
+        listView.adapter = adapter
+
+        return curView
     }
 
     companion object {
