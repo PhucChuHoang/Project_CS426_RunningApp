@@ -27,7 +27,7 @@ class OnboardingFragment : Fragment() {
         val clickListener = View.OnClickListener { v ->
             when (v) {
                 binding.joinCommunityButton -> {
-                    findNavController().navigate(R.id.action_onboardingFragment_to_homeFragment)
+                    findNavController().navigate(R.id.action_onboardingFragment_to_registerFragment)
                 }
                 binding.loginButton -> {
                     findNavController().navigate(R.id.action_onboardingFragment_to_logInFragment)
