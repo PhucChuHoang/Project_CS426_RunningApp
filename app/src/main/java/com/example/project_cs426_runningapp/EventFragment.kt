@@ -1,10 +1,13 @@
 package com.example.project_cs426_runningapp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.ListView
 
 // TODO: Rename parameter arguments, choose names that match
@@ -36,6 +39,7 @@ class EventFragment : Fragment() {
         }
     }
 
+    @SuppressLint("Range")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,6 +48,32 @@ class EventFragment : Fragment() {
 
         val curView = inflater.inflate(R.layout.fragment_event, container, false);
 
+        //SQL
+        val bellButton = curView.findViewById<ImageView>(R.id.event_bell_button)
+        bellButton.setOnClickListener{
+            val db = SQLiteDBHelper(curView.context, null,
+                "RUNNING_DATABASE", 1)
+
+            val cursor = db.getEvent()
+
+            cursor!!.moveToFirst()
+
+            if(cursor.count > 0) {
+                do {
+                    Log.d("From SQL", cursor.getString(cursor.getColumnIndex("event_name")))
+                } while (cursor.moveToNext())
+            }
+        }
+
+        val editButton = curView.findViewById<ImageView>(R.id.event_edit_button)
+        editButton.setOnClickListener{
+            val db = SQLiteDBHelper(curView.context, null,
+                "RUNNING_DATABASE", 1)
+
+            db.clearTable()
+        }
+
+        //Listview
         val listView = curView.findViewById<ListView>(R.id.event_list_view)
 
         val adapter = EventAdapter(curView.context, array)
