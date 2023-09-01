@@ -7,30 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.example.project_cs426_runningapp.databinding.FragmentHomeBinding
-import com.example.project_cs426_runningapp.databinding.FragmentOnboardingBinding
+import com.example.project_cs426_runningapp.databinding.FragmentLogInBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var _binding: FragmentHomeBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentHomeBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         // Inflate the layout for this fragment
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -39,23 +27,12 @@ class HomeFragment : Fragment() {
 
         val clickListener = View.OnClickListener { v ->
             when (v) {
-                binding.startLayout -> {
-                    findNavController().navigate(R.id.action_onboardingFragment_to_registerFragment)
-                }
-                binding.loginButton -> {
-                    findNavController().navigate(R.id.action_onboardingFragment_to_logInFragment)
+                binding.startCurrentLayout -> {
+                    findNavController().navigate(R.id.action_homeFragment_to_runningFragment)
                 }
             }
         }
-        binding.joinCommunityButton.setOnClickListener(clickListener)
-        binding.loginButton.setOnClickListener(clickListener)
+        binding.startCurrentLayout.setOnClickListener(clickListener)
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
-}
-
 
 }
