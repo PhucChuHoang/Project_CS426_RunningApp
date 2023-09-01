@@ -39,7 +39,7 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
 
         if (!event_data.event_name.isNullOrEmpty()) {
             Log.d("Bug", event_data.event_name)
-            Picasso.get()
+            Picasso.with(rowView.context)
                 .load(event_data.image_name)
                 .fit()
                 .centerCrop()
