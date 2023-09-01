@@ -22,8 +22,8 @@ class ProfileFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    var array = arrayListOf(EventData("Object 1", true),
-        EventData("Object 2", true))
+    var array = arrayListOf(EventData("Object 1", true,"https://cdn.timeoutdoors.com/media/tod/london-marathon-events/bqb09362.jpg"),
+        EventData("Object 2", true, null))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
