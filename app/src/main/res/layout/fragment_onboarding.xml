@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OnboardingFragment">
+
+    <ImageView
+        android:id="@+id/onboarding_picture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
+        android:src="@drawable/onboarding_background"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="-29dp"
+        android:importantForAccessibility="no"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/join_community_button"
+        android:layout_width="324dp"
+        android:layout_height="58dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/join_our_community"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/onboarding_picture"
+        android:background="@drawable/linear_orange_color"
+        android:textSize="17sp"
+        android:fontFamily="@font/poppins700"
+        android:textColor="#FCFCFC"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/join_community_button">
+
+        <TextView
+            android:id="@+id/already_member_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Already a member?"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:text="Sign in"
+            android:textColor="#FB724C"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/already_member_text"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity"
+    android:background="@drawable/round_outline"
+    android:clipToOutline="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="35dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Event"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="20dp"></TextView>
+
+        <ImageButton
+            android:id="@+id/event_bell_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/icon_bell"
+            android:backgroundTint="@color/white"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp">
+        </ImageButton>
+
+
+        <ImageButton
+            android:id="@+id/event_edit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/icon_edit"
+            android:backgroundTint="@color/white"
+            android:layout_toLeftOf="@+id/event_bell_button"
+            android:layout_marginRight="20dp">
+        </ImageButton>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/round_outline_1"
+        android:layout_marginTop="20dp">
+
+        <ListView
+            android:id="@+id/event_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="70dp">
+        </ListView>
+    </LinearLayout>
+
+</LinearLayout>
