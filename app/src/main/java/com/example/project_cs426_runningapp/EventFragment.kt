@@ -22,11 +22,11 @@ class EventFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    var array = arrayListOf(EventData("Object 1", true),
-        EventData("Object 2", true),
-        EventData("Object 3", false),
-        EventData("Object 4", true),
-        EventData("Object 5", true),)
+    var array = arrayListOf(EventData("Object 1", true, "https://cdn.timeoutdoors.com/media/tod/london-marathon-events/bqb09362.jpg"),
+        EventData("Object 2", true, null),
+        EventData("Object 3", false, null),
+        EventData("Object 4", true, null),
+        EventData("Object 5", true, null),)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
