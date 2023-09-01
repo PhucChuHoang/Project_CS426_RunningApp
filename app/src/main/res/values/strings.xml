@@ -1,19 +1,3 @@
 <resources>
     <string name="app_name">Project_CS426_RunningApp</string>
-    <string name="home">Home</string>
-    <string name="achievements">Achievements</string>
-    <string name="dontknow">DontKnow</string>
-    <string name="profile">Profile</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="join_our_community">Join our community</string>
-    <string name="sign_in_now">Sign in now</string>
-    <string name="email">E-mail</string>
-    <string name="already_have_account">Already have an account?</string>
-    <string name="log_in">Log in</string>
-    <string name="forgot_your_password_click_here">Forgot your password? Click here</string>
-    <string name="let_s_start_here">Let\'s start here</string>
-    <string name="fill_in_your_details_to_begin">Fill in your details to begin</string>
-    <string name="sign_up">Sign up</string>
-    <string name="google_maps_key">AIzaSyDNI_ZWPqvdS6r6gPVO50I4TlYkfkZdXh8</string>
 </resources>
