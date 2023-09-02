@@ -46,15 +46,16 @@ class RegisterFragment : Fragment() {
                                     "password" to password
                                 )
                                 db.collection("users")
-                                    .add(user)
-                                    .addOnSuccessListener { documentReference ->
+                                    .document(email)
+                                    .set(user)
+                                    .addOnSuccessListener {
                                         Toast.makeText(
                                             requireContext(),
                                             "Register successfully.",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
-                                    .addOnFailureListener { e ->
+                                    .addOnFailureListener {
                                         Toast.makeText(
                                             requireContext(),
                                             "Register failed.",

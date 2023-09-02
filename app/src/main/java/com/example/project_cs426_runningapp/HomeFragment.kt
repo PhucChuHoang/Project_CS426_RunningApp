@@ -1,7 +1,6 @@
 package com.example.project_cs426_runningapp
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -21,16 +20,14 @@ class HomeFragment : Fragment() {
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         db = FirebaseFirestore.getInstance()
-        var name = ""
         val email = arguments?.getString("email")
-        if (email != null) {
-            db.collection("users")
-                .whereEqualTo("email", email)
-                .get()
-                .addOnSuccessListener { documents ->
-                    binding.fullName.text = "Hello, " + documents.documents[0].data?.get("fullname").toString()
-                }
-        }
+        db.collection("users")
+            .whereEqualTo("email", email)
+            .get()
+            .addOnSuccessListener { documents ->
+                binding.fullName.text = "Hello, " + documents.documents[0].get("fullname").toString()
+            }
+        val user = db.collection("users").document(email.toString())
         return binding.root
     }
 
