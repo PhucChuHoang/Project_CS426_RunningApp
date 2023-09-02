@@ -29,6 +29,12 @@
         <action
             android:id="@+id/action_homeFragment_to_runningFragment"
             app:destination="@id/runningFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_settingFragment"
+            app:destination="@id/settingFragment" />
     </fragment>
     <fragment
         android:id="@+id/runningFragment"
@@ -86,4 +92,14 @@
             android:id="@+id/action_registerFragment_to_dontKnowFragment"
             app:destination="@id/dontKnowFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.project_cs426_runningapp.EditProfileFragment"
+        android:label="fragment_edit_profile"
+        tools:layout="@layout/fragment_edit_profile" />
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.example.project_cs426_runningapp.SettingFragment"
+        android:label="fragment_setting"
+        tools:layout="@layout/fragment_setting" />
 </navigation>
