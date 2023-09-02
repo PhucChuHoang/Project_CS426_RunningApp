@@ -66,6 +66,19 @@ class RegisterFragment : Fragment() {
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
+                                // TODO: Move this activity code to start place
+                                val activity = hashMapOf(
+                                    "ac_id" to "activity1",
+                                    "distance" to 0,
+                                    "screenShot" to 0,
+                                    "duration" to 0,
+                                    "calories" to 0,
+                                )
+                                db.collection("users")
+                                    .document(email)
+                                    .collection("activities")
+                                    .document("activity1")  //TODO: change to proper activity id
+                                    .set(activity)
                                 val bundle = Bundle()
                                 bundle.putString("email", email)
                                 findNavController().navigate(R.id.action_registerFragment_to_homeFragment, bundle)

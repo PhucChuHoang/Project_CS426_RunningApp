@@ -28,7 +28,6 @@ class HomeFragment : Fragment() {
             .addOnSuccessListener { documents ->
                 binding.fullName.text = "Hello, " + documents.documents[0].get("fullname").toString()
             }
-        val user = db.collection("users").document(email.toString())
         return binding.root
     }
 
