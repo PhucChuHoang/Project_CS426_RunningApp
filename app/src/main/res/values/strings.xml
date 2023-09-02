@@ -4,7 +4,6 @@
     <string name="achievements">Achievements</string>
     <string name="dontknow">DontKnow</string>
     <string name="profile">Profile</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="join_our_community">Join our community</string>
     <string name="sign_in_now">Sign in now</string>
@@ -15,4 +14,7 @@
     <string name="let_s_start_here">Let\'s start here</string>
     <string name="fill_in_your_details_to_begin">Fill in your details to begin</string>
     <string name="sign_up">Sign up</string>
+    <string name="facebook_app_id">1538482726957852</string>
+    <string name="facebook_login_protocol_scheme">fb1538482726957852</string>
+    <string name="facebook_client_token">ea2ded87e51220022f3313fd5f41a563</string>
 </resources>
