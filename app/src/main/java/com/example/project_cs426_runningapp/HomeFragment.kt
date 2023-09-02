@@ -34,5 +34,9 @@ class HomeFragment : Fragment() {
         }
         binding.startCurrentLayout.setOnClickListener(clickListener)
     }
+    private fun requestPermission()
+    {
+
+    }
 
 }
