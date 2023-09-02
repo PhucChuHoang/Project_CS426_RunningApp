@@ -48,31 +48,6 @@ class EventFragment : Fragment() {
 
         val curView = inflater.inflate(R.layout.fragment_event, container, false);
 
-        //SQL
-        val bellButton = curView.findViewById<ImageView>(R.id.event_bell_button)
-        bellButton.setOnClickListener{
-            val db = SQLiteDBHelper(curView.context, null,
-                "RUNNING_DATABASE", 1)
-
-            val cursor = db.getEvent()
-
-            cursor!!.moveToFirst()
-
-            if(cursor.count > 0) {
-                do {
-                    Log.d("From SQL", cursor.getString(cursor.getColumnIndex("event_name")))
-                } while (cursor.moveToNext())
-            }
-        }
-
-        val editButton = curView.findViewById<ImageView>(R.id.event_edit_button)
-        editButton.setOnClickListener{
-            val db = SQLiteDBHelper(curView.context, null,
-                "RUNNING_DATABASE", 1)
-
-            db.clearTable()
-        }
-
         //Listview
         val listView = curView.findViewById<ListView>(R.id.event_list_view)
 

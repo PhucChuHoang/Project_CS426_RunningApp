@@ -39,25 +39,6 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
 
         event_title.text = event_data.event_name
 
-        if (!event_data.event_name.isNullOrEmpty()) {
-            Log.d("Bug", event_data.event_name)
-            Picasso.with(rowView.context)
-                .load(event_data.image_name)
-                .fit()
-                .centerCrop()
-                .into(thumbnail)
-        }
-
-        join_button.setOnClickListener {
-            val db = SQLiteDBHelper(rowView.context, null,
-                "RUNNING_DATABASE", 1)
-
-            val event_name = rowView.findViewById<TextView>(R.id.text_event_name).text.toString()
-
-            db.addEvent(event_name, true)
-
-            Toast.makeText(rowView.context,"Added to database", Toast.LENGTH_LONG).show()
-        }
         return rowView
     }
 
