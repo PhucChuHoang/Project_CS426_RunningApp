@@ -10,7 +10,6 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import com.squareup.picasso.Picasso
-import java.net.URL
 
 class EventAdapter(private val context: Context, private val dataSource: ArrayList<EventData>) : BaseAdapter() {
 

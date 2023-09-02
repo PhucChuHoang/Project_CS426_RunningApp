@@ -21,7 +21,7 @@ class LogInFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentLogInBinding.inflate(inflater, container, false)
         auth = FirebaseAuth.getInstance()
         callBackManager = CallbackManager.Factory.create()
@@ -53,7 +53,14 @@ class LogInFragment : Fragment() {
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(requireActivity()) { task ->
                             if (task.isSuccessful) {
-                                findNavController().navigate(R.id.action_logInFragment_to_homeFragment)
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Log in successfully.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                val bundle = Bundle()
+                                bundle.putString("email", email)
+                                findNavController().navigate(R.id.action_logInFragment_to_homeFragment, bundle)
                             } else {
                                 Toast.makeText(
                                     requireContext(),
