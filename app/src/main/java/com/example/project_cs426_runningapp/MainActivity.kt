@@ -1,11 +1,13 @@
 package com.example.project_cs426_runningapp
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.project_cs426_runningapp.databinding.ActivityOnboardingBinding
+import com.example.project_cs426_runningapp.other.Constants.ACTION_SHOW_TRACKING_FRAGMENT
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
@@ -13,6 +15,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        navigateToRunningFragmentIfNeeded(intent)
 
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         auth = FirebaseAuth.getInstance()
@@ -39,4 +43,18 @@ class MainActivity : AppCompatActivity() {
 //            findNavController(R.id.nav_host_fragment_activity_home).navigate(R.id.action_onboardingFragment_to_homeFragment)
 //        }
     }
+
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        navigateToRunningFragmentIfNeeded(intent)
+    }
+
+    private fun navigateToRunningFragmentIfNeeded(intent: Intent?) {
+        if(intent?.action == ACTION_SHOW_TRACKING_FRAGMENT) {
+            val navController = findNavController(R.id.nav_host_fragment_activity_home)
+            navController.navigate(R.id.action_global_runningFragment)
+        }
+    }
+
 }
