@@ -1,10 +1,13 @@
 package com.example.project_cs426_runningapp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.ListView
 
 // TODO: Rename parameter arguments, choose names that match
@@ -22,7 +25,7 @@ class EventFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    var array = arrayListOf(EventData("Object 1", true, "https://cdn.timeoutdoors.com/media/tod/london-marathon-events/bqb09362.jpg"),
+    var array = arrayListOf(EventData("Wild running", true, "https://cdn.timeoutdoors.com/media/tod/london-marathon-events/bqb09362.jpg"),
         EventData("Object 2", true, null),
         EventData("Object 3", false, null),
         EventData("Object 4", true, null),
@@ -36,6 +39,7 @@ class EventFragment : Fragment() {
         }
     }
 
+    @SuppressLint("Range")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,6 +48,7 @@ class EventFragment : Fragment() {
 
         val curView = inflater.inflate(R.layout.fragment_event, container, false);
 
+        //Listview
         val listView = curView.findViewById<ListView>(R.id.event_list_view)
 
         val adapter = EventAdapter(curView.context, array)

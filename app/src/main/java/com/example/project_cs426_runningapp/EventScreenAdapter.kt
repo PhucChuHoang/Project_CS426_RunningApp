@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import com.squareup.picasso.Picasso
 
 class EventAdapter(private val context: Context, private val dataSource: ArrayList<EventData>) : BaseAdapter() {
@@ -34,17 +35,10 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
 
         val event_title = rowView.findViewById(R.id.text_event_name) as TextView
         val thumbnail = rowView.findViewById(R.id.event_thumbnail) as ImageView
+        val join_button = rowView.findViewById(R.id.join_challenge_button) as TextView
 
         event_title.text = event_data.event_name
 
-        if (!event_data.event_name.isNullOrEmpty()) {
-            Log.d("Bug", event_data.event_name)
-            Picasso.get()
-                .load(event_data.image_name)
-                .fit()
-                .centerCrop()
-                .into(thumbnail)
-        }
         return rowView
     }
 
