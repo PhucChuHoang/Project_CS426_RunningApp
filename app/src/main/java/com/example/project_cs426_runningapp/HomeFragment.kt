@@ -26,8 +26,10 @@ class HomeFragment : Fragment() {
             .whereEqualTo("email", email)
             .get()
             .addOnSuccessListener { documents ->
-                binding.fullName.text = "Hello, " + documents.documents[0].get("fullname").toString()
-            }
+                for (document in documents) {
+                    binding.fullName.text = "Hello, " + document.data["fullname"].toString()
+                    //TODO: add await
+                }}
         return binding.root
     }
 
