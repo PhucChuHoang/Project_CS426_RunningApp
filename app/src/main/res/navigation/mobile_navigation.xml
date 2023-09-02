@@ -3,13 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
+    android:label="fragment_running"
     app:startDestination="@id/onboardingFragment">
 
     <fragment
         android:id="@+id/onboardingFragment"
         android:name="com.example.project_cs426_runningapp.OnboardingFragment"
         android:label="fragment_onboarding"
-        tools:layout="@layout/fragment_onboarding" >
+        tools:layout="@layout/fragment_onboarding">
         <action
             android:id="@+id/action_onboardingFragment_to_logInFragment"
             app:destination="@id/logInFragment" />
@@ -24,6 +25,15 @@
         android:id="@+id/homeFragment"
         android:name="com.example.project_cs426_runningapp.HomeFragment"
         android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_runningFragment"
+            app:destination="@id/runningFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/runningFragment"
+        android:name="com.example.project_cs426_runningapp.RunningFragment"
+        android:label="fragment_running"
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/profileFragment"
@@ -39,12 +49,12 @@
         android:id="@+id/dontKnowFragment"
         android:name="com.example.project_cs426_runningapp.EventFragment"
         android:label="fragment_dont_know"
-        tools:layout="@layout/fragment_event" /> 
+        tools:layout="@layout/fragment_event" />
     <fragment
         android:id="@+id/logInFragment"
         android:name="com.example.project_cs426_runningapp.LogInFragment"
         android:label="fragment_log_in"
-        tools:layout="@layout/fragment_log_in" >
+        tools:layout="@layout/fragment_log_in">
         <action
             android:id="@+id/action_logInFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
@@ -62,7 +72,7 @@
         android:id="@+id/registerFragment"
         android:name="com.example.project_cs426_runningapp.RegisterFragment"
         android:label="fragment_register"
-        tools:layout="@layout/fragment_register" >
+        tools:layout="@layout/fragment_register">
         <action
             android:id="@+id/action_registerFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
