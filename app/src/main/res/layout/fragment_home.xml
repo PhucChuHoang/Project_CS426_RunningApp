@@ -1,20 +1,276 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeFragment">
+    android:background="@color/cold_grey"
+    android:orientation="vertical"
+    tools:context=".ProfileFragment">
 
-    <TextView
+    <RelativeLayout
+        android:id="@+id/layout0"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        >
+    <RelativeLayout
+        android:id="@+id/layout1"
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:background="@drawable/round_outline">
+    </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="35dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/icon_gear"
+            >
+        </ImageView>
+        <ImageView
+            android:id="@+id/profile_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/profile"
+            >
+        </ImageView>
+        <TextView
+            android:id="@+id/fullName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/profile_image"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="20dp"
+            android:text="Hello, Andrew"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            ></TextView>
+        <TextView
+            android:id="@+id/level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/profile_image"
+            android:layout_below="@id/fullName"
+            android:layout_marginLeft="20dp"
+            android:text="Beginer"
+            android:textColor="#F3F7FF"
+            android:textSize="12dp"
+            ></TextView>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="25dp"
+            android:id="@+id/layout2"
+            android:layout_below="@id/level"
+            android:layout_height="200dp"
+            android:background="@drawable/round_outline"
+            android:backgroundTint="@color/white"
+            >
+            <TextView
+                android:id="@+id/weekGoal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="20dp"
+                android:text="Week Goal"
+                android:textColor="#333333"
+                android:textStyle="bold"
+                android:textSize="18dp"
+                ></TextView>
+            <TextView
+                android:id="@+id/kmweekGoal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@id/weekGoal"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="20dp"
+                android:text="50km"
+                android:textColor="#FE904B"
+                android:textStyle="bold"
+                android:textSize="18dp"
+                ></TextView>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="20dp"
+                android:src="@drawable/right2"></ImageView>
+            <TextView
+                android:id="@+id/kmDone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/weekGoal"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="20dp"
+                android:text="35 km done"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="12dp"
+                ></TextView>
+            <TextView
+                android:id="@+id/kmLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/weekGoal"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="20dp"
+                android:text="15 km left"
+                android:textColor="#cccccc"
+                android:textStyle="bold"
+                android:textSize="12dp"
+                ></TextView>
+            <ProgressBar
+                android:id="@+id/progress"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_marginHorizontal="20dp"
+                android:layout_height="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/kmLeft"
+                android:progressBackgroundTint="@color/cold_grey"
+                android:progressTint="#FE8D4B"
+                android:progress="70"/>
+
+        </RelativeLayout>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/start_current_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This is Home Fragment"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/layout0"
+        >
+    <RelativeLayout
+        android:visibility="visible"
+        android:id="@+id/startLayout"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="20dp"
+        android:layout_height="70dp"
+        android:background="@drawable/round_outline">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="100dp"
+            android:layout_marginRight="20dp"
+            android:id="@+id/running_image"
+            android:src="@drawable/running"
+            ></ImageView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:textSize="30dp"
+            android:text="Start"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_toRightOf="@+id/running_image"
+            >
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        </TextView>
+    </RelativeLayout>
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/layout4"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="20dp"
+        android:layout_height="70dp"
+        android:background="@drawable/round_outline">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:id="@+id/running_image1"
+            android:src="@drawable/running"
+            ></ImageView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/currentJogging"
+            android:textSize="17dp"
+            android:text="Current jogging"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_toRightOf="@+id/running_image1"
+            >
+
+        </TextView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/timeCurrentJogging"
+            android:textSize="15dp"
+            android:text="01:10:04"
+            android:textColor="@color/white"
+            android:layout_toRightOf="@+id/running_image1"
+            android:layout_below="@+id/currentJogging"
+            >
+
+        </TextView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/currentkm"
+            android:textSize="17dp"
+            android:text="10.9 Km"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            >
+
+        </TextView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/kcal"
+            android:textSize="15dp"
+            android:text="539 kcal"
+            android:textColor="@color/white"
+            android:layout_below="@+id/currentkm"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            >
+
+        </TextView>
+    </RelativeLayout>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/recentActivity"
+        android:layout_below="@+id/start_current_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="25dp"
+        android:text="Recent Activity"
+        android:textColor="#333333"
+        android:textStyle="bold"
+        android:textSize="18dp"
+        ></TextView>
+
+
+
+</RelativeLayout>
