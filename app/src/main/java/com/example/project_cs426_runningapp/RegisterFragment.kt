@@ -9,10 +9,14 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import androidx.navigation.fragment.findNavController
 import com.example.project_cs426_runningapp.databinding.FragmentRegisterBinding
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 class RegisterFragment : Fragment() {
     private lateinit var binding: FragmentRegisterBinding
     private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -20,6 +24,7 @@ class RegisterFragment : Fragment() {
     ): View? {
         binding = FragmentRegisterBinding.inflate(inflater, container, false)
         auth = FirebaseAuth.getInstance()
+        db = Firebase.firestore
         return binding.root
     }
 
@@ -35,7 +40,48 @@ class RegisterFragment : Fragment() {
                     auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(requireActivity()) { task ->
                             if (task.isSuccessful) {
-                                findNavController().navigate(R.id.action_registerFragment_to_homeFragment)
+                                val user = hashMapOf(
+                                    "fullname" to fullname,
+                                    "email" to email,
+                                    "password" to password,
+                                    "phone" to "phone",
+                                    "country" to "country",
+                                    "sex" to "sex",
+                                    "address" to "address"
+                                )
+                                db.collection("users")
+                                    .document(email)
+                                    .set(user)
+                                    .addOnSuccessListener {
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "Register successfully.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                    .addOnFailureListener {
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "Register failed.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                // TODO: Move this activity code to start place
+                                val activity = hashMapOf(
+                                    "ac_id" to "activity1",
+                                    "distance" to 0,
+                                    "screenShot" to 0,
+                                    "duration" to 0,
+                                    "calories" to 0,
+                                )
+                                db.collection("users")
+                                    .document(email)
+                                    .collection("activities")
+                                    .document("activity1")  //TODO: change to proper activity id
+                                    .set(activity)
+                                val bundle = Bundle()
+                                bundle.putString("email", email)
+                                findNavController().navigate(R.id.action_registerFragment_to_homeFragment, bundle)
                             } else {
                                 Toast.makeText(
                                     requireContext(),

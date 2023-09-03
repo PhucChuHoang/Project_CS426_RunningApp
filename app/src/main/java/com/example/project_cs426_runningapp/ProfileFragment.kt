@@ -5,7 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.ListView
+import com.squareup.picasso.Picasso
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -39,6 +41,10 @@ class ProfileFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val curView = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        val profile_image = curView.findViewById<ImageView>(R.id.profile_image)
+
+        profile_image.setImageResource(R.drawable.thang_ngot)
 
         val listView = curView.findViewById<ListView>(R.id.profile_list_event)
 
