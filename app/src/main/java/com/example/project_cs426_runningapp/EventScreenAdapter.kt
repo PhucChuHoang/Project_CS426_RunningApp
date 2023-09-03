@@ -1,16 +1,15 @@
 package com.example.project_cs426_runningapp
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import com.squareup.picasso.Picasso
+import org.checkerframework.checker.units.qual.s
+
 
 class EventAdapter(private val context: Context, private val dataSource: ArrayList<EventData>) : BaseAdapter() {
 
@@ -39,11 +38,13 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
 
         event_title.text = event_data.event_name
 
-
-        if (!event_data.event_name.isNullOrEmpty()) {
-            Log.d("Bug", event_data.event_name)
+        if (!event_data.image_name.isNullOrEmpty()) {
+            val p = event_data.image_name?.split("/")?.toTypedArray()
+            //Create the new image link
+            //Create the new image link
+            val imageLink = "https://drive.google.com/uc?export=download&id=" + (p?.get(5) ?: "")
             Picasso.with(rowView.context)
-                .load(event_data.image_name)
+                .load(imageLink)
                 .fit()
                 .centerCrop()
                 .into(thumbnail)

@@ -1,6 +1,7 @@
 package com.example.project_cs426_runningapp
 
 import android.annotation.SuppressLint
+import android.nfc.Tag
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,6 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ListView
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -25,11 +32,13 @@ class EventFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    var array = arrayListOf(EventData("Wild running", true, "https://cdn.timeoutdoors.com/media/tod/london-marathon-events/bqb09362.jpg"),
+    var array = arrayListOf(EventData("Wild running", true, "https://drive.google.com/file/d/1dVtJAWX3GtgH-YuTrUkHacBSKriLxyG0/view?usp=sharing"),
         EventData("Object 2", true, null),
         EventData("Object 3", false, null),
         EventData("Object 4", true, null),
         EventData("Object 5", true, null),)
+
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,17 +54,63 @@ class EventFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-
         val curView = inflater.inflate(R.layout.fragment_event, container, false);
 
-        //Listview
-        val listView = curView.findViewById<ListView>(R.id.event_list_view)
+        db = FirebaseFirestore.getInstance()
 
-        val adapter = EventAdapter(curView.context, array)
+        var edit_button = curView.findViewById<ImageView>(R.id.event_edit_button)
 
-        listView.adapter = adapter
+        edit_button.setOnClickListener {
+
+        }
+
+        var bell_button = curView.findViewById<ImageView>(R.id.event_bell_button)
+
+        bell_button.setOnClickListener {
+
+        }
+
+        //Get events list
+        var events_array: ArrayList<EventData> = arrayListOf()
+
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                var events = db.collection("events")
+                    .whereEqualTo("status", 1)
+                    .get()
+                    .await()
+
+                // Check if there are documents and update the UI
+                if (!events.isEmpty) {
+                    for (document in events) {
+                        var event_name = document.data?.get("event_name") as String
+                        var image_url = document.data?.get("image_url") as? String
+                        Log.d("Event name", event_name)
+                        // Update the UI on the main thread
+
+                            events_array.add(EventData(event_name, true, image_url))
+                    }
+                    launch(Dispatchers.Main) {
+                        setUpEventAdapter(events_array, curView)
+                    }
+                }
+
+            } catch (e: Exception) {
+                // Handle any exceptions that may occur during the Firestore operation
+                e.printStackTrace()
+            }
+        }
 
         return curView
+    }
+
+    private fun setUpEventAdapter(events_array: ArrayList<EventData>, curView: View) {
+        Log.d("Here", "Here")
+        val listView = curView.findViewById<ListView>(R.id.event_list_view)
+
+        val adapter = EventAdapter(curView.context, events_array)
+
+        listView.adapter = adapter
     }
 
     companion object {
