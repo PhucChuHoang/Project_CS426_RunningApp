@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 import org.checkerframework.checker.units.qual.s
@@ -36,8 +37,14 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val rowView = inflater.inflate(R.layout.event_list_view, parent, false)
+        val rowView: View
 
+        if (convertView == null) {
+            rowView = inflater.inflate(R.layout.event_list_view, parent, false)
+        }
+        else {
+            rowView = convertView
+        }
         val event_data = getItem(position) as EventData
 
         val event_title = rowView.findViewById<TextView>(R.id.text_event_name)

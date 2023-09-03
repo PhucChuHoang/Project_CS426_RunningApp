@@ -12,6 +12,8 @@ import android.widget.ImageView
 import android.widget.ListView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import com.example.project_cs426_runningapp.databinding.FragmentEventBinding
+import com.example.project_cs426_runningapp.databinding.FragmentHomeBinding
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,6 +34,8 @@ class EventFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private lateinit var binding: FragmentEventBinding
+
     private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,15 +48,14 @@ class EventFragment : Fragment() {
 
     @SuppressLint("Range")
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val curView = inflater.inflate(R.layout.fragment_event, container, false);
+        binding = FragmentEventBinding.inflate(inflater, container, false)
 
-        var edit_button = curView.findViewById<ImageView>(R.id.event_edit_button)
-
-        edit_button.setOnClickListener {
+        binding.eventEditButton.setOnClickListener {
             db.collection("registers")
                 .whereEqualTo("status", 1)
                 .get()
@@ -63,13 +66,11 @@ class EventFragment : Fragment() {
                 }
         }
 
-        var bell_button = curView.findViewById<ImageView>(R.id.event_bell_button)
-
-        bell_button.setOnClickListener {
+        binding.eventBellButton.setOnClickListener {
 
         }
 
-        return curView
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
