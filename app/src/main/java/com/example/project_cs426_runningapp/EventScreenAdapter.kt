@@ -39,6 +39,15 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
 
         event_title.text = event_data.event_name
 
+
+        if (!event_data.event_name.isNullOrEmpty()) {
+            Log.d("Bug", event_data.event_name)
+            Picasso.with(rowView.context)
+                .load(event_data.image_name)
+                .fit()
+                .centerCrop()
+                .into(thumbnail)
+        }
         return rowView
     }
 
