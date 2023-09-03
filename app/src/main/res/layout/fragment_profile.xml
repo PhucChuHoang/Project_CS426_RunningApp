@@ -61,6 +61,7 @@
                 android:scaleType="centerCrop" />
 
             <TextView
+                android:id="@+id/profile_user_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
@@ -74,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:text="Xin loi">
+                android:text="Beginner">
             </TextView>
         </LinearLayout>
 

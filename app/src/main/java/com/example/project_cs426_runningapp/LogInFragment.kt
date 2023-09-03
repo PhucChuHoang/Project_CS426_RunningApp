@@ -59,6 +59,7 @@ class LogInFragment : Fragment() {
                                     )
                                     val editor = sharedPreferences.edit()
                                     editor.putString("name", name)
+                                    editor.putString("email", email)
                                     editor.apply()
                                     findNavController().navigate(R.id.action_logInFragment_to_homeFragment)
                                 }

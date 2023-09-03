@@ -53,7 +53,14 @@ class EventFragment : Fragment() {
         var edit_button = curView.findViewById<ImageView>(R.id.event_edit_button)
 
         edit_button.setOnClickListener {
-
+            db.collection("registers")
+                .whereEqualTo("status", 1)
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        Log.d("Register", "")
+                    }
+                }
         }
 
         var bell_button = curView.findViewById<ImageView>(R.id.event_bell_button)
@@ -83,14 +90,16 @@ class EventFragment : Fragment() {
                 // Check if there are documents and update the UI
                 if (!events.isEmpty) {
                     for (document in events) {
+
                         var event_name = document.data?.get("event_name") as String
                         var image_url = document.data?.get("image_url") as? String
                         var start_date = document.data?.get("start_date") as? String
                         var end_date = document.data?.get("end_date") as? String
-                        Log.d("Event name", event_name)
+                        Log.d("Image_url", document.data?.get("image_url").toString())
                         // Update the UI on the main thread
 
-                        events_array.add(EventData(event_name, true, image_url, start_date, end_date))
+                        events_array.add(EventData(event_name, true, image_url,
+                                        start_date, end_date, "${document.id}"))
                     }
                     launch(Dispatchers.Main) {
                         setUpEventAdapter(events_array, view)

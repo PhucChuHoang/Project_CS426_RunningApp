@@ -1,20 +1,27 @@
 package com.example.project_cs426_runningapp
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 import org.checkerframework.checker.units.qual.s
 import org.w3c.dom.Text
 
 
-class EventAdapter(private val context: Context, private val dataSource: ArrayList<EventData>) : BaseAdapter() {
+class EventAdapter(private val context: Context, private val dataSource: ArrayList<EventData>,
+                    private val profile_specific: Boolean = false) : BaseAdapter() {
 
     private var inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+    private lateinit var db: FirebaseFirestore
+
+    private var can_join = true
 
     override fun getCount(): Int {
         return dataSource.size
@@ -54,13 +61,60 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
                 .into(thumbnail)
         }
 
+        var emailArray = arrayListOf<String?>()
+
+        db = FirebaseFirestore.getInstance()
+
+        val sharedPreferences = context.getSharedPreferences("sharedPrefs", 0)
+        var email = sharedPreferences.getString("email", null)
+
+        db.collection("events")
+            .document(event_data.event_id)
+            .collection("participants")
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    emailArray.add("${document.id}")
+                }
+                setJoin(emailArray, email, rowView)
+            }
+            .addOnFailureListener {exception ->
+                Log.w("Error", "Error getting documents: ", exception)
+            }
+
         join_button.setOnClickListener {
-            join_button.text = "Joined"
-            join_button.setBackgroundResource(R.drawable.round_outline_gray)
+            if (can_join) {
+                Log.d("Join", "Here")
+                join_button.text = "Joined"
+                join_button.setBackgroundResource(R.drawable.round_outline_gray)
+
+                Log.d("Email", email.toString())
+
+                if (email != null && emailArray.indexOf(email) == -1) {
+                    db.collection("events")
+                        .document(event_data.event_id)
+                        .collection("participants").document(email).set(hashMapOf("status" to 1))
+                }
+
+                can_join = false
+            }
         }
         return rowView
+    }
+
+     private fun setJoin(emailArray: ArrayList<String?>, email: String?, rowView: View) {
+        var join_button = rowView.findViewById(R.id.join_challenge_button) as TextView
+
+        if (emailArray.indexOf(email) != -1) {
+            join_button.text = "Joined"
+            join_button.setBackgroundResource(R.drawable.round_outline_gray)
+            can_join = false;
+        }
+        else {
+            can_join = true;
+        }
     }
 }
 
 public class EventData(var event_name: String, var joined: Boolean, var image_name: String?,
-                       var start_date: String?, var end_date: String?)
+                       var start_date: String?, var end_date: String?, var event_id: String)
