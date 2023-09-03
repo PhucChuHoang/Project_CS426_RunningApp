@@ -32,12 +32,6 @@ class EventFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    var array = arrayListOf(EventData("Wild running", true, "https://drive.google.com/file/d/1dVtJAWX3GtgH-YuTrUkHacBSKriLxyG0/view?usp=sharing"),
-        EventData("Object 2", true, null),
-        EventData("Object 3", false, null),
-        EventData("Object 4", true, null),
-        EventData("Object 5", true, null),)
-
     private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,8 +50,6 @@ class EventFragment : Fragment() {
         // Inflate the layout for this fragment
         val curView = inflater.inflate(R.layout.fragment_event, container, false);
 
-        db = FirebaseFirestore.getInstance()
-
         var edit_button = curView.findViewById<ImageView>(R.id.event_edit_button)
 
         edit_button.setOnClickListener {
@@ -69,6 +61,14 @@ class EventFragment : Fragment() {
         bell_button.setOnClickListener {
 
         }
+
+        return curView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        db = FirebaseFirestore.getInstance()
 
         //Get events list
         var events_array: ArrayList<EventData> = arrayListOf()
@@ -85,13 +85,15 @@ class EventFragment : Fragment() {
                     for (document in events) {
                         var event_name = document.data?.get("event_name") as String
                         var image_url = document.data?.get("image_url") as? String
+                        var start_date = document.data?.get("start_date") as? String
+                        var end_date = document.data?.get("end_date") as? String
                         Log.d("Event name", event_name)
                         // Update the UI on the main thread
 
-                            events_array.add(EventData(event_name, true, image_url))
+                        events_array.add(EventData(event_name, true, image_url, start_date, end_date))
                     }
                     launch(Dispatchers.Main) {
-                        setUpEventAdapter(events_array, curView)
+                        setUpEventAdapter(events_array, view)
                     }
                 }
 
@@ -100,12 +102,9 @@ class EventFragment : Fragment() {
                 e.printStackTrace()
             }
         }
-
-        return curView
     }
 
     private fun setUpEventAdapter(events_array: ArrayList<EventData>, curView: View) {
-        Log.d("Here", "Here")
         val listView = curView.findViewById<ListView>(R.id.event_list_view)
 
         val adapter = EventAdapter(curView.context, events_array)

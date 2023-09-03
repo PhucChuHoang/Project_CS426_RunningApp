@@ -24,8 +24,7 @@ class ProfileFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    var array = arrayListOf(EventData("Object 1", true,"https://drive.google.com/file/d/1Sw5URh7AhWPrmEOgf8iNA9z_sfEkaCRE/view?usp=drive_link"),
-        EventData("Object 2", true, null))
+    var array: ArrayList<EventData> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
