@@ -52,12 +52,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_image"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_gravity="center"
-                android:background="@drawable/icon_profile">
-            </ImageView>
+                android:src="@drawable/thang_ngot"
+                android:scaleType="centerCrop" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -65,7 +66,7 @@
                 android:textAlignment="center"
                 android:textSize="20dp"
                 android:textColor="@color/white"
-                android:text="Username">
+                android:text="Thang Ngot">
             </TextView>
 
             <TextView
@@ -73,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:text="Beginner">
+                android:text="Xin loi">
             </TextView>
         </LinearLayout>
 

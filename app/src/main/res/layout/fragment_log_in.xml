@@ -160,7 +160,7 @@
         android:textSize="17sp"
         android:textColor="#2B2B2B"/>
 
-    <TextView
+    <com.facebook.login.widget.LoginButton
         android:id="@+id/login_screen_facebook_button"
         android:layout_width="324dp"
         android:layout_height="58dp"
