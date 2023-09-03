@@ -6,15 +6,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
-import com.spotify.protocol.types.Track
+import com.spotify.protocol.types.PlayerState
+import com.example.project_cs426_runningapp.databinding.FragmentAchievementsBinding
+import com.spotify.protocol.types.ImageUri
 
 class AchievementsFragment : Fragment() {
     private val clientID = "12b274aab0934f67942cba17bd6770c7"
     private val redirectUri = "http://www.cs426.com/redirect"
     private var spotifyAppRemote: SpotifyAppRemote? = null
+    private lateinit var binding: FragmentAchievementsBinding
 
     override fun onStart() {
         super.onStart()
@@ -26,15 +30,7 @@ class AchievementsFragment : Fragment() {
             override fun onConnected(appRemote: SpotifyAppRemote?) {
                 spotifyAppRemote = appRemote
                 Log.d("MainActivity", "Connected! Yay!")
-                spotifyAppRemote?.let {
-                    val playlistURI = "spotify:playlist:37i9dQZF1DX2sUQwD7tbmL"
-                    it.playerApi.play(playlistURI)
-                    // Subscribe to PlayerState
-                    it.playerApi.subscribeToPlayerState().setEventCallback {
-                        val track: Track = it.track
-                        Log.d("MainActivity", track.name + " by " + track.artist.name)
-                    }
-                }
+                subscribeToPlayerState()
             }
             override fun onFailure(throwable: Throwable?) {
                 if (throwable != null) {
@@ -49,15 +45,54 @@ class AchievementsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_achievements, container, false)
+        binding = FragmentAchievementsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    private fun subscribeToPlayerState() {
+        spotifyAppRemote?.playerApi?.subscribeToPlayerState()
+            ?.setEventCallback { playerState: PlayerState ->
+                val track = playerState.track
+                if (track != null) {
+                    val trackName = track.name
+                    val artistName = track.artist.name
+                    val albumCoverImage = track.imageUri
+
+                    // Update UI with the current track information
+                    updateUI(trackName, artistName, albumCoverImage)
+                }
+            }
+    }
+
+    private fun updateUI(trackName: String, artistName: String, albumImageUri: ImageUri?) {
+        val trackNameTextView = binding.trackNameTextView
+        val artistNameTextView = binding.artistNameTextView
+        val albumCoverImageView = binding.albumCoverImageView
+
+        trackNameTextView.text = trackName
+        artistNameTextView.text = artistName
+
+        // Load album cover image using Glide library
+        Glide.with(this)
+            .load(albumImageUri)
+            .into(albumCoverImageView)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        subscribeToPlayerState()
+        Log.d("MainActivity", "onViewCreated")
     }
 
     override fun onStop() {
         super.onStop()
+        spotifyAppRemote?.let {
+            SpotifyAppRemote.disconnect(it)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         spotifyAppRemote?.let {
             SpotifyAppRemote.disconnect(it)
         }

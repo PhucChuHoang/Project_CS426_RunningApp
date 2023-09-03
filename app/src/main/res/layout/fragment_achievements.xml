@@ -6,15 +6,42 @@
     android:layout_height="match_parent"
     tools:context=".AchievementsFragment">
 
+    <ImageView
+        android:id="@+id/albumCoverImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:contentDescription="Album Cover"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintVertical_chainStyle="packed"
+        android:src="@drawable/emoji_fire"/>
+
     <TextView
+        android:id="@+id/trackNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This is Achievements Fragment"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        android:text="Track Name"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/albumCoverImageView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.2"
+        app:layout_constraintHorizontal_bias="0.5" />
+
+    <TextView
+        android:id="@+id/artistNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Artist Name"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@+id/trackNameTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.1"
+        app:layout_constraintHorizontal_bias="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
