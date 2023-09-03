@@ -13,7 +13,7 @@ import com.spotify.protocol.types.Track
 
 class AchievementsFragment : Fragment() {
     private val clientID = "12b274aab0934f67942cba17bd6770c7"
-    private val redirectUri = "http://cs426runningapp.com"
+    private val redirectUri = "http://www.cs426.com/redirect"
     private var spotifyAppRemote: SpotifyAppRemote? = null
 
     override fun onStart() {
@@ -26,6 +26,15 @@ class AchievementsFragment : Fragment() {
             override fun onConnected(appRemote: SpotifyAppRemote?) {
                 spotifyAppRemote = appRemote
                 Log.d("MainActivity", "Connected! Yay!")
+                spotifyAppRemote?.let {
+                    val playlistURI = "spotify:playlist:37i9dQZF1DX2sUQwD7tbmL"
+                    it.playerApi.play(playlistURI)
+                    // Subscribe to PlayerState
+                    it.playerApi.subscribeToPlayerState().setEventCallback {
+                        val track: Track = it.track
+                        Log.d("MainActivity", track.name + " by " + track.artist.name)
+                    }
+                }
             }
             override fun onFailure(throwable: Throwable?) {
                 if (throwable != null) {
@@ -45,15 +54,6 @@ class AchievementsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        spotifyAppRemote?.let {
-            val playlistURI = "spotify:playlist:37i9dQZF1DX2sUQwD7tbmL"
-            it.playerApi.play(playlistURI)
-            // Subscribe to PlayerState
-            it.playerApi.subscribeToPlayerState().setEventCallback {
-                val track: Track = it.track
-                Log.d("MainActivity", track.name + " by " + track.artist.name)
-            }
-        }
     }
 
     override fun onStop() {
