@@ -9,36 +9,24 @@ import android.widget.Toast
 import com.example.project_cs426_runningapp.databinding.FragmentLogInBinding
 import com.google.firebase.auth.FirebaseAuth
 import androidx.navigation.fragment.findNavController
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
-import com.facebook.login.LoginResult
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class LogInFragment : Fragment() {
     private lateinit var binding: FragmentLogInBinding
     private lateinit var auth: FirebaseAuth
-    private lateinit var callBackManager: CallbackManager
+    private lateinit var db: FirebaseFirestore
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentLogInBinding.inflate(inflater, container, false)
         auth = FirebaseAuth.getInstance()
-        callBackManager = CallbackManager.Factory.create()
-        binding.loginScreenFacebookButton.registerCallback(callBackManager, object :
-            FacebookCallback<LoginResult> {
-            override fun onSuccess(result: LoginResult?) {
-                findNavController().navigate(R.id.action_logInFragment_to_homeFragment)
-            }
-
-            override fun onCancel() {
-                Toast.makeText(requireContext(), "Log in failed.", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onError(error: FacebookException?) {
-                Toast.makeText(requireContext(), "Log in failed.", Toast.LENGTH_SHORT).show()
-            }
-        })
+        db = FirebaseFirestore.getInstance()
         return binding.root
     }
 
@@ -58,9 +46,22 @@ class LogInFragment : Fragment() {
                                     "Log in successfully.",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                val bundle = Bundle()
-                                bundle.putString("email", email)
-                                findNavController().navigate(R.id.action_logInFragment_to_homeFragment, bundle)
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    val name = db.collection("users")
+                                        .document(email)
+                                        .get()
+                                        .await()
+                                        .get("fullname")
+                                        .toString()
+                                    val sharedPreferences = requireActivity().getSharedPreferences(
+                                        "sharedPrefs",
+                                        0
+                                    )
+                                    val editor = sharedPreferences.edit()
+                                    editor.putString("name", name)
+                                    editor.apply()
+                                    findNavController().navigate(R.id.action_logInFragment_to_homeFragment)
+                                }
                             } else {
                                 Toast.makeText(
                                     requireContext(),
