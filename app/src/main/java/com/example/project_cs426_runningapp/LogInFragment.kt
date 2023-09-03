@@ -47,19 +47,20 @@ class LogInFragment : Fragment() {
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 CoroutineScope(Dispatchers.Main).launch {
-                                    val name = db.collection("users")
+                                    val documentSnapshot = db.collection("users")
                                         .document(email)
                                         .get()
                                         .await()
-                                        .get("fullname")
-                                        .toString()
-                                    val sharedPreferences = requireActivity().getSharedPreferences(
-                                        "sharedPrefs",
-                                        0
-                                    )
+
+                                    val fieldNames = listOf("fullname", "address", "country", "email", "password", "phone", "sex")
+                                    val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
                                     val editor = sharedPreferences.edit()
-                                    editor.putString("name", name)
-                                    editor.putString("email", email)
+
+                                    for (fieldName in fieldNames) {
+                                        val value = documentSnapshot.getString(fieldName)
+                                        editor.putString(fieldName, value)
+                                    }
+
                                     editor.apply()
                                     findNavController().navigate(R.id.action_logInFragment_to_homeFragment)
                                 }
