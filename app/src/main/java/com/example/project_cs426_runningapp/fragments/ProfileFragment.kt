@@ -81,6 +81,7 @@ class ProfileFragment : Fragment() {
                         var check = db.collection("events")
                             .document(document.id)
                             .collection("participants")
+                            .whereEqualTo("status", 1)
                             .get()
                             .addOnSuccessListener {documents2 ->
                                  for (document2 in documents2) {
@@ -91,6 +92,7 @@ class ProfileFragment : Fragment() {
                                                 start_date, end_date, document.id
                                             )
                                         )
+                                        break
                                     }
                                 }
                             }
@@ -111,7 +113,7 @@ class ProfileFragment : Fragment() {
     private fun setUpEventAdapter(events_array: ArrayList<EventData>, curView: View) {
         val listView = curView.findViewById<ListView>(R.id.profile_list_event)
 
-        val adapter = EventAdapter(curView.context, events_array)
+        val adapter = EventAdapter(curView.context, events_array, true)
 
         listView.adapter = adapter
     }
