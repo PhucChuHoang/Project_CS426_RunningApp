@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LogInFragment">
+    tools:context=".fragments.LogInFragment">
 
     <ImageView
         android:id="@+id/login_screen_return_button"

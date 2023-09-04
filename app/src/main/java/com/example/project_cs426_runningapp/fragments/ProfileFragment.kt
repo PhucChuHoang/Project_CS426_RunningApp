@@ -1,56 +1,36 @@
-package com.example.project_cs426_runningapp
+package com.example.project_cs426_runningapp.fragments
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.example.project_cs426_runningapp.adapters.EventAdapter
+import com.example.project_cs426_runningapp.adapters.EventData
+import com.example.project_cs426_runningapp.R
 import com.google.firebase.firestore.FirebaseFirestore
-import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ProfileFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ProfileFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
     private var name: String? = null
 
     private lateinit var db: FirebaseFirestore
 
-    var array: ArrayList<EventData> = arrayListOf()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var array: ArrayList<EventData> = arrayListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val curView = inflater.inflate(R.layout.fragment_profile, container, false);
+        val curView = inflater.inflate(R.layout.fragment_profile, container, false)
 
         val profile_image = curView.findViewById<ImageView>(R.id.profile_image)
         val user_name = curView.findViewById<TextView>(R.id.profile_user_name)
@@ -77,13 +57,13 @@ class ProfileFragment : Fragment() {
         db = FirebaseFirestore.getInstance()
 
         val sharedPreferences2 = view.context.getSharedPreferences("sharedPrefs", 0)
-        var email = sharedPreferences2.getString("email", null)
+        val email = sharedPreferences2.getString("email", null)
 
-        var events_array: ArrayList<EventData> = arrayListOf()
+        val events_array: ArrayList<EventData> = arrayListOf()
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
-                var events = db.collection("events")
+                val events = db.collection("events")
                     .whereEqualTo("status", 1)
                     .get()
                     .await()
@@ -91,15 +71,15 @@ class ProfileFragment : Fragment() {
                 // Check if there are documents and update the UI
                 if (!events.isEmpty) {
                     for (document in events) {
-                        var event_name = document.data?.get("event_name") as String
-                        var image_url = document.data?.get("image_url") as? String
-                        var start_date = document.data?.get("start_date") as? String
-                        var end_date = document.data?.get("end_date") as? String
-                        Log.d("Image_url", document.data?.get("image_url").toString())
+                        val event_name = document.data.get("event_name") as String
+                        val image_url = document.data.get("image_url") as? String
+                        val start_date = document.data.get("start_date") as? String
+                        val end_date = document.data.get("end_date") as? String
+                        Log.d("Image_url", document.data.get("image_url").toString())
                         // Update the UI on the main thread
 
                         var check = db.collection("events")
-                            .document("${document.id}")
+                            .document(document.id)
                             .collection("participants")
                             .get()
                             .addOnSuccessListener {documents2 ->
@@ -108,7 +88,7 @@ class ProfileFragment : Fragment() {
                                         events_array.add(
                                             EventData(
                                                 event_name, true, image_url,
-                                                start_date, end_date, "${document.id}"
+                                                start_date, end_date, document.id
                                             )
                                         )
                                     }
@@ -134,25 +114,5 @@ class ProfileFragment : Fragment() {
         val adapter = EventAdapter(curView.context, events_array)
 
         listView.adapter = adapter
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ProfileFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ProfileFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }

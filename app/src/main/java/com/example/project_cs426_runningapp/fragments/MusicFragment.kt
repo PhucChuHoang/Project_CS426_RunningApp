@@ -1,4 +1,4 @@
-package com.example.project_cs426_runningapp
+package com.example.project_cs426_runningapp.fragments
 
 import android.os.Bundle
 import android.util.Log
@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.project_cs426_runningapp.R
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote

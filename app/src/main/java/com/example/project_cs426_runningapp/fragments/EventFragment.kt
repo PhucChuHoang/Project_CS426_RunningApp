@@ -1,4 +1,4 @@
-package com.example.project_cs426_runningapp
+package com.example.project_cs426_runningapp.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -9,6 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
 import androidx.lifecycle.lifecycleScope
+import com.example.project_cs426_runningapp.adapters.EventAdapter
+import com.example.project_cs426_runningapp.adapters.EventData
+import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentEventBinding
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
@@ -78,8 +81,10 @@ class EventFragment : Fragment() {
                         Log.d("Image_url", document.data?.get("image_url").toString())
                         // Update the UI on the main thread
 
-                        events_array.add(EventData(event_name, true, image_url,
-                                        start_date, end_date, "${document.id}"))
+                        events_array.add(
+                            EventData(event_name, true, image_url,
+                                        start_date, end_date, "${document.id}")
+                        )
                     }
                     launch(Dispatchers.Main) {
                         setUpEventAdapter(events_array, view)
