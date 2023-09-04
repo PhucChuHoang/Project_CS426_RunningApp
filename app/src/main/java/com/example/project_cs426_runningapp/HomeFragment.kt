@@ -29,7 +29,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         db = FirebaseFirestore.getInstance()
         val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
-        name = sharedPreferences.getString("name", null)
+        name = sharedPreferences.getString("fullname", null)
         binding.fullName.text = "Hello, $name"
         return binding.root
     }
