@@ -3,10 +3,12 @@ package com.example.project_cs426_runningapp.fragments
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentHomeBinding
@@ -15,6 +17,7 @@ import com.example.project_cs426_runningapp.other.Constants.REQUEST_CODE_LOCATIO
 import com.example.project_cs426_runningapp.other.TrackingUtility
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
+import com.example.project_cs426_runningapp.ViewModel.HomeViewModel
 
 class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var binding: FragmentHomeBinding
@@ -30,7 +33,9 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         db = FirebaseFirestore.getInstance()
         val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
         name = sharedPreferences.getString("fullname", null)
-        binding.fullName.text = "Hello, $name"
+        if(HomeViewModel.get().isNotBlank())
+            binding.fullName.text = "Hello, ${HomeViewModel.get()}"
+        else binding.fullName.text = "Hello, $name"
         return binding.root
     }
 
@@ -38,6 +43,9 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         super.onViewCreated(view, savedInstanceState)
         binding.fullName.text = "Hello, $name"
         requestPermissions()
+        if(HomeViewModel.get().isNotBlank())
+            binding.fullName.text = "Hello, ${HomeViewModel.get()}"
+        else binding.fullName.text = "Hello, $name"
         val clickListener = View.OnClickListener { v ->
             when (v) {
                 binding.startCurrentLayout -> {

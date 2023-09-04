@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import com.example.project_cs426_runningapp.ViewModel.HomeViewModel
 
 class ProfileFragment : Fragment() {
     private var name: String? = null
@@ -40,7 +41,9 @@ class ProfileFragment : Fragment() {
         val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
         name = sharedPreferences.getString("fullname", null)
 
-        user_name.text = name
+        if(HomeViewModel.get().isNotBlank())
+            user_name.text = "${HomeViewModel.get()}"
+        else user_name.text = name
 
         val listView = curView.findViewById<ListView>(R.id.profile_list_event)
 
@@ -59,8 +62,11 @@ class ProfileFragment : Fragment() {
         val sharedPreferences2 = view.context.getSharedPreferences("sharedPrefs", 0)
         val email = sharedPreferences2.getString("email", null)
 
+        val user_name = view.findViewById<TextView>(R.id.profile_user_name)
         val events_array: ArrayList<EventData> = arrayListOf()
-
+        if(HomeViewModel.get().isNotBlank())
+            user_name.text = "${HomeViewModel.get()}"
+        else user_name.text = name
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val events = db.collection("events")
