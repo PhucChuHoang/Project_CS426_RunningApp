@@ -12,6 +12,10 @@ import com.example.project_cs426_runningapp.databinding.FragmentRegisterBinding
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class RegisterFragment : Fragment() {
     private lateinit var binding: FragmentRegisterBinding
@@ -79,9 +83,17 @@ class RegisterFragment : Fragment() {
                                     .collection("activities")
                                     .document("activity1")  //TODO: change to proper activity id
                                     .set(activity)
-                                val bundle = Bundle()
-                                bundle.putString("email", email)
-                                findNavController().navigate(R.id.action_registerFragment_to_homeFragment, bundle)
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    val name = fullname
+                                    val sharedPreferences = requireActivity().getSharedPreferences(
+                                        "sharedPrefs",
+                                        0
+                                    )
+                                    val editor = sharedPreferences.edit()
+                                    editor.putString("name", name)
+                                    editor.apply()
+                                    findNavController().navigate(R.id.action_registerFragment_to_homeFragment)
+                                }
                             } else {
                                 Toast.makeText(
                                     requireContext(),
