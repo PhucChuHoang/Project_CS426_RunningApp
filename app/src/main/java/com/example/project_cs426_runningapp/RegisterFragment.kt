@@ -44,10 +44,10 @@ class RegisterFragment : Fragment() {
                                     "fullname" to fullname,
                                     "email" to email,
                                     "password" to password,
-                                    "phone" to "phone",
-                                    "country" to "country",
-                                    "sex" to "sex",
-                                    "address" to "address"
+                                    "phone" to "",
+                                    "country" to "",
+                                    "sex" to "",
+                                    "address" to ""
                                 )
                                 db.collection("users")
                                     .document(email)
