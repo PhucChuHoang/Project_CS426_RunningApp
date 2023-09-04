@@ -30,48 +30,54 @@ class LogInFragment : Fragment() {
         return binding.root
     }
 
+    private var isNavigationInProgress = false // Add this flag
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val clickListener = View.OnClickListener { v ->
             when (v) {
                 binding.loginScreenLoginButton -> {
-                    val email = binding.loginScreenEmailEditText.text.toString()
-                    val password = binding.loginScreenPasswordEditText.text.toString()
-                    auth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(requireActivity()) { task ->
-                            if (task.isSuccessful) {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Log in successfully.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    val documentSnapshot = db.collection("users")
-                                        .document(email)
-                                        .get()
-                                        .await()
+                    if (!isNavigationInProgress) { // Check if navigation is in progress
+                        isNavigationInProgress = true // Set the flag to true
+                        val email = binding.loginScreenEmailEditText.text.toString()
+                        val password = binding.loginScreenPasswordEditText.text.toString()
+                        auth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(requireActivity()) { task ->
+                                if (task.isSuccessful) {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Log in successfully.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        val documentSnapshot = db.collection("users")
+                                            .document(email)
+                                            .get()
+                                            .await()
 
-                                    val fieldNames = listOf("fullname", "address", "country", "email", "password", "phone", "sex")
-                                    val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
-                                    val editor = sharedPreferences.edit()
+                                        val fieldNames = listOf("fullname", "address", "country", "email", "password", "phone", "sex")
+                                        val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
+                                        val editor = sharedPreferences.edit()
 
-                                    for (fieldName in fieldNames) {
-                                        val value = documentSnapshot.getString(fieldName)
-                                        editor.putString(fieldName, value)
+                                        for (fieldName in fieldNames) {
+                                            val value = documentSnapshot.getString(fieldName)
+                                            editor.putString(fieldName, value)
+                                        }
+
+                                        editor.apply()
+                                        findNavController().navigate(R.id.action_logInFragment_to_homeFragment)
                                     }
-
-                                    editor.apply()
-                                    findNavController().navigate(R.id.action_logInFragment_to_homeFragment)
+                                } else {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Log in failed.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    isNavigationInProgress = false // Reset the flag
                                 }
-                            } else {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Log in failed.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
                             }
-                        }
+                    }
                 }
             }
         }
