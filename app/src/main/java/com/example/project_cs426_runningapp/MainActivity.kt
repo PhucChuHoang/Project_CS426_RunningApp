@@ -9,6 +9,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.project_cs426_runningapp.databinding.ActivityOnboardingBinding
 import com.example.project_cs426_runningapp.other.Constants.ACTION_SHOW_TRACKING_FRAGMENT
 import com.google.firebase.auth.FirebaseAuth
+import org.checkerframework.checker.units.qual.s
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityOnboardingBinding
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             if(destination.id == R.id.onboardingFragment || destination.id == R.id.runningFragment || destination.id == R.id.logInFragment || destination.id == R.id.registerFragment || destination.id == R.id.settingFragment || destination.id == R.id.editProfileFragment) {
+
                 navView.visibility = View.GONE
             } else {
                 navView.visibility = View.VISIBLE
@@ -44,6 +46,14 @@ class MainActivity : AppCompatActivity() {
 //        }
     }
 
+    private fun connected() {
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+    }
+
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
@@ -56,5 +66,4 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.action_global_runningFragment)
         }
     }
-
 }

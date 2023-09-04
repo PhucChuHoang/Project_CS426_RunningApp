@@ -1,59 +1,85 @@
 package com.example.project_cs426_runningapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.spotify.android.appremote.api.ConnectionParams
+import com.spotify.android.appremote.api.Connector
+import com.spotify.android.appremote.api.SpotifyAppRemote
+import com.example.project_cs426_runningapp.databinding.FragmentAchievementsBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AchievementsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AchievementsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private val clientID = "12b274aab0934f67942cba17bd6770c7"
+    private val redirectUri = "http://www.cs426.com/redirect"
+    private var spotifyAppRemote: SpotifyAppRemote? = null
+    private lateinit var binding: FragmentAchievementsBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+    override fun onStart() {
+        super.onStart()
+        val connectionParams = ConnectionParams.Builder(clientID)
+            .setRedirectUri(redirectUri)
+            .showAuthView(true)
+            .build()
+        SpotifyAppRemote.connect(requireContext(), connectionParams, object : Connector.ConnectionListener {
+            override fun onConnected(appRemote: SpotifyAppRemote?) {
+                spotifyAppRemote = appRemote
+                //TODO: REMOVE THIS WHEN DONE DEVELOPING
+                spotifyAppRemote?.playerApi?.play("spotify:track:4cOdK2wGLETKBW3PvgPWqT")
+                subscribeToPlayerState()
+            }
+            override fun onFailure(throwable: Throwable?) {
+                if (throwable != null) {
+
+                }
+            }
+        })
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_achievements, container, false)
+    ): View {
+        binding = FragmentAchievementsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AchievementsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AchievementsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    private fun subscribeToPlayerState() {
+        spotifyAppRemote?.playerApi?.subscribeToPlayerState()?.setEventCallback { playerState ->
+            val track = playerState.track
+            if (track != null) {
+                spotifyAppRemote?.imagesApi?.getImage(track.imageUri)
+                    ?.setResultCallback { bitmap ->
+                        binding.albumCoverImageView.setImageBitmap(bitmap)
+                    }
+                updateUI(track.name, track.artist.name)
             }
+        }
+    }
+
+    private fun updateUI(trackName: String, artistName: String) {
+        binding.trackNameTextView.text = trackName
+        binding.artistNameTextView.text = artistName
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        subscribeToPlayerState()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        spotifyAppRemote?.let {
+            SpotifyAppRemote.disconnect(it)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        spotifyAppRemote?.let {
+            SpotifyAppRemote.disconnect(it)
+        }
     }
 }
