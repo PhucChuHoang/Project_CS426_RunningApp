@@ -66,4 +66,11 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.action_global_runningFragment)
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        auth.currentUser?.let {
+            auth.signOut()
+        }
+    }
 }
