@@ -1,4 +1,4 @@
-package com.example.project_cs426_runningapp
+package com.example.project_cs426_runningapp.adapters
 
 import android.content.Context
 import android.util.Log
@@ -8,15 +8,13 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.project_cs426_runningapp.R
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
-import org.checkerframework.checker.units.qual.s
-import org.w3c.dom.Text
 
 
 class EventAdapter(private val context: Context, private val dataSource: ArrayList<EventData>,
-                    private val profile_specific: Boolean = false) : BaseAdapter() {
+                   private val profile_specific: Boolean = false) : BaseAdapter() {
 
     private var inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 

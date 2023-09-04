@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:focusableInTouchMode="true"
-    tools:context=".EditProfileFragment">
+    tools:context=".fragments.EditProfileFragment">
 
 
     <LinearLayout

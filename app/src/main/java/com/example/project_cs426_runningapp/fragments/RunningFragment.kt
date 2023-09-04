@@ -1,4 +1,4 @@
-package com.example.project_cs426_runningapp
+package com.example.project_cs426_runningapp.fragments
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
+import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentRunningBinding
 import com.example.project_cs426_runningapp.other.Constants.ACTION_PAUSE_SERVICE
 import com.example.project_cs426_runningapp.other.Constants.ACTION_START_OR_RESUME_SERVICE
@@ -21,7 +21,6 @@ import com.example.project_cs426_runningapp.services.TrackingService
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.PolylineOptions
-import timber.log.Timber
 
 
 class RunningFragment : Fragment() {

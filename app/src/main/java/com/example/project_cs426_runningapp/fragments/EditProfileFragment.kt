@@ -1,4 +1,4 @@
-package com.example.project_cs426_runningapp
+package com.example.project_cs426_runningapp.fragments
 
 import android.os.Bundle
 import android.text.Editable
@@ -9,13 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentEditProfileBinding
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase

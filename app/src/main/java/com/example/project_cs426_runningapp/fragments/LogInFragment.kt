@@ -1,7 +1,6 @@
-package com.example.project_cs426_runningapp
+package com.example.project_cs426_runningapp.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +9,10 @@ import android.widget.Toast
 import com.example.project_cs426_runningapp.databinding.FragmentLogInBinding
 import com.google.firebase.auth.FirebaseAuth
 import androidx.navigation.fragment.findNavController
+import com.example.project_cs426_runningapp.R
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
