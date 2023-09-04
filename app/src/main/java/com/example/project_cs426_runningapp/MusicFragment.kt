@@ -16,7 +16,6 @@ class MusicFragment : Fragment() {
     private val redirectUri = "http://www.cs426.com/redirect"
     private var spotifyAppRemote: SpotifyAppRemote? = null
     private lateinit var binding: FragmentMusicBinding
-    private val stateTrack: Int = 1 // 0: paused, 1: playing
 
     override fun onStart() {
         super.onStart()
@@ -28,14 +27,11 @@ class MusicFragment : Fragment() {
             override fun onConnected(appRemote: SpotifyAppRemote?) {
                 spotifyAppRemote = appRemote
                 Log.d("MusicFragment", "Connected! Yay!")
-                //TODO: REMOVE THIS WHEN DONE DEVELOPING
-                spotifyAppRemote?.playerApi?.play("spotify:track:4cOdK2wGLETKBW3PvgPWqT")
                 subscribeToPlayerState()
             }
-            override fun onFailure(throwable: Throwable?) {
-                if (throwable != null) {
 
-                }
+            override fun onFailure(p0: Throwable?) {
+                TODO("Not yet implemented")
             }
         })
     }
@@ -51,42 +47,49 @@ class MusicFragment : Fragment() {
     private fun subscribeToPlayerState() {
         spotifyAppRemote?.playerApi?.subscribeToPlayerState()?.setEventCallback { playerState ->
             val track = playerState.track
+            val isPlaying = playerState.isPaused.not()
             if (track != null) {
-                updateUI(track)
+                updateUI(track, isPlaying)
             }
         }
     }
 
-    private fun updateUI(track: com.spotify.protocol.types.Track) {
+    private fun updateUI(track: com.spotify.protocol.types.Track, isPlaying: Boolean) {
+        Log.d("Check", "updateUI: ${track.name}")
         binding.trackNameTextView.text = track.name
         binding.artistNameTextView.text = track.artist.name
         spotifyAppRemote?.imagesApi?.getImage(track.imageUri)
             ?.setResultCallback { bitmap ->
                 binding.albumCoverImageView.setImageBitmap(bitmap)
             }
-        if (stateTrack == 0) {
+        if (isPlaying) {
+            binding.playerContinue.visibility = View.GONE
             binding.playerPause.visibility = View.VISIBLE
-            binding.playerContinue.visibility = View.INVISIBLE
-        } else {
-            binding.playerPause.visibility = View.INVISIBLE
+        }
+        else {
             binding.playerContinue.visibility = View.VISIBLE
+            binding.playerPause.visibility = View.GONE
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        subscribeToPlayerState()
         val clickListener = View.OnClickListener { view ->
             when (view.id) {
-                R.id.player_back -> spotifyAppRemote?.playerApi?.skipPrevious()
-                R.id.player_skip -> spotifyAppRemote?.playerApi?.skipNext()
+                R.id.player_back -> {
+                    spotifyAppRemote?.playerApi?.skipPrevious()
+                }
+                R.id.player_skip -> {
+                    spotifyAppRemote?.playerApi?.skipNext()
+                }
                 R.id.control_circle -> {
-                    if (stateTrack == 0) {
-                        spotifyAppRemote?.playerApi?.resume()
-                        stateTrack == 1
-                    } else {
-                        spotifyAppRemote?.playerApi?.pause()
-                        stateTrack == 0
+                    spotifyAppRemote?.playerApi?.playerState?.setResultCallback { playerState ->
+                        val isPlaying = playerState.isPaused.not()
+                        if (isPlaying) {
+                            spotifyAppRemote?.playerApi?.pause()
+                        } else {
+                            spotifyAppRemote?.playerApi?.resume()
+                        }
                     }
                 }
             }
@@ -94,6 +97,7 @@ class MusicFragment : Fragment() {
         binding.playerSkip.setOnClickListener(clickListener)
         binding.playerBack.setOnClickListener(clickListener)
         binding.controlCircle.setOnClickListener(clickListener)
+        subscribeToPlayerState()
     }
 
     override fun onStop() {

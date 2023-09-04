@@ -23,23 +23,23 @@
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:text="Track Name"
-        android:textSize="20sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@color/black"
         app:layout_constraintTop_toBottomOf="@+id/albumCoverImageView"
         app:layout_constraintStart_toStartOf="@id/albumCoverImageView"
-        android:layout_marginTop="30dp"/>
+        android:layout_marginTop="20dp"/>
 
     <TextView
         android:id="@+id/artistNameTextView"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:text="Artist Name"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textColor="@color/black"
         app:layout_constraintTop_toBottomOf="@+id/trackNameTextView"
         app:layout_constraintStart_toStartOf="@id/trackNameTextView"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="5dp"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
