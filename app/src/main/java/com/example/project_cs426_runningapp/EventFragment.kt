@@ -1,6 +1,8 @@
 package com.example.project_cs426_runningapp
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.nfc.Tag
 import android.os.Bundle
 import android.util.Log
@@ -18,6 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.io.ByteArrayOutputStream
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -113,6 +116,8 @@ class EventFragment : Fragment() {
             }
         }
     }
+
+
 
     private fun setUpEventAdapter(events_array: ArrayList<EventData>, curView: View) {
         val listView = curView.findViewById<ListView>(R.id.event_list_view)

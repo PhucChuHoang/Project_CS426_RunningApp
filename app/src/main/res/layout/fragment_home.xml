@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/cold_grey"
     android:orientation="vertical"
+    android:id="@+id/homeView"
     tools:context=".ProfileFragment">
 
     <RelativeLayout
@@ -271,6 +272,12 @@
         android:textSize="18dp"
         ></TextView>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvRuns"
+        android:layout_width="match_parent"
+        android:layout_height="330dp"
+        android:layout_below="@+id/recentActivity"
+        android:layout_marginTop="45dp"></androidx.recyclerview.widget.RecyclerView>
 
 
 </RelativeLayout>
