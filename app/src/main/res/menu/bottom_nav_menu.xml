@@ -8,9 +8,9 @@
         android:title="@string/home" />
 
     <item
-        android:id="@+id/achievementsFragment"
+        android:id="@+id/musicFragment"
         android:icon="@drawable/icon_achivements"
-        android:title="@string/achievements" />
+        android:title="@string/music" />
 
     <item
         android:id="@+id/dontKnowFragment"
