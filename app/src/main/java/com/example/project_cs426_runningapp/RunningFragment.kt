@@ -99,10 +99,10 @@ class RunningFragment : Fragment() {
     private fun updateTracking(isTracking: Boolean) {
         this.isTracking = isTracking
         if(!isTracking) {
-            binding.btnToggleRun.text = "Start"
+            binding.btnToggleRun.setImageResource(R.drawable.start_button)
             binding.btnFinishRun.visibility = View.VISIBLE
         } else {
-            binding.btnToggleRun.text = "Stop"
+            binding.btnToggleRun.setImageResource(R.drawable.pause_button)
             binding.btnFinishRun.visibility = View.GONE
         }
     }
