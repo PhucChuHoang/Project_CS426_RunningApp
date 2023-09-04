@@ -58,7 +58,7 @@ class ProfileFragment : Fragment() {
         profile_image.setImageResource(R.drawable.thang_ngot)
 
         val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
-        name = sharedPreferences.getString("name", null)
+        name = sharedPreferences.getString("fullname", null)
 
         user_name.text = name
 
