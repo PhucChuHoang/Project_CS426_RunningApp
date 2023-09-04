@@ -1,5 +1,6 @@
 package com.example.project_cs426_runningapp
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,6 +13,8 @@ import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.protocol.types.PlayerState
 import com.example.project_cs426_runningapp.databinding.FragmentAchievementsBinding
+import com.spotify.protocol.client.CallResult
+import com.spotify.protocol.client.Subscription
 import com.spotify.protocol.types.ImageUri
 
 class AchievementsFragment : Fragment() {
@@ -43,45 +46,33 @@ class AchievementsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentAchievementsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     private fun subscribeToPlayerState() {
-        spotifyAppRemote?.playerApi?.subscribeToPlayerState()
-            ?.setEventCallback { playerState: PlayerState ->
-                val track = playerState.track
-                if (track != null) {
-                    val trackName = track.name
-                    val artistName = track.artist.name
-                    val albumCoverImage = track.imageUri
-
-                    // Update UI with the current track information
-                    updateUI(trackName, artistName, albumCoverImage)
-                }
+        spotifyAppRemote?.playerApi?.subscribeToPlayerState()?.setEventCallback { playerState ->
+            val track = playerState.track
+            if (track != null) {
+                spotifyAppRemote?.imagesApi?.getImage(track.imageUri)
+                    ?.setResultCallback { bitmap ->
+                        binding.albumCoverImageView.setImageBitmap(bitmap)
+                    }
+                updateUI(track.name, track.artist.name)
             }
+        }
     }
 
-    private fun updateUI(trackName: String, artistName: String, albumImageUri: ImageUri?) {
-        val trackNameTextView = binding.trackNameTextView
-        val artistNameTextView = binding.artistNameTextView
-        val albumCoverImageView = binding.albumCoverImageView
-
-        trackNameTextView.text = trackName
-        artistNameTextView.text = artistName
-
-        // Load album cover image using Glide library
-        Glide.with(this)
-            .load(albumImageUri)
-            .into(albumCoverImageView)
+    private fun updateUI(trackName: String, artistName: String) {
+        binding.trackNameTextView.text = trackName
+        binding.artistNameTextView.text = artistName
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         subscribeToPlayerState()
-        Log.d("MainActivity", "onViewCreated")
     }
 
     override fun onStop() {
