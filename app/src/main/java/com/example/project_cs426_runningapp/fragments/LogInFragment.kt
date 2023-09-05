@@ -44,7 +44,7 @@ class LogInFragment : Fragment() {
                     val email = binding.loginScreenEmailEditText.text.toString()
                     val password = binding.loginScreenPasswordEditText.text.toString()
 
-                    val storageReference = Firebase.storage.reference
+                    val storageReference = Firebase.storage("gs://cs426-project.appspot.com").reference
 
                     var profileRef = storageReference.child("images/" + email + "_profile.jpg")
 
