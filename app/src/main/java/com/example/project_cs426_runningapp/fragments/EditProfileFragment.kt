@@ -10,37 +10,30 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentEditProfileBinding
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import com.example.project_cs426_runningapp.ViewModel.HomeViewModel
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.FirebaseAuth
 
 
 class EditProfileFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
     private lateinit var binding: FragmentEditProfileBinding
-    private lateinit var database: DatabaseReference
     private lateinit var db: FirebaseFirestore
     private var email: String = ""
+    private lateinit var auth: FirebaseAuth
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentEditProfileBinding.inflate(inflater, container, false)
         db = FirebaseFirestore.getInstance()
-        database = Firebase.database.reference
+        auth = FirebaseAuth.getInstance()
         val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
         email = sharedPreferences.getString("email", "") ?: ""
 
@@ -356,7 +349,7 @@ class EditProfileFragment : Fragment() {
 
             //update password
 
-            val user1 = Firebase.auth.currentUser
+            val user1 = auth.currentUser
             if(checkPasswordField()){
                 user1!!.updatePassword(password).addOnCompleteListener{
                     //if success update success
