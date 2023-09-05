@@ -1,15 +1,15 @@
 package com.example.project_cs426_runningapp.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.google.firebase.auth.FirebaseAuth
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentRegisterBinding
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -106,5 +106,8 @@ class RegisterFragment : Fragment() {
             }
         }
         binding.registerScreenRegisterButton.setOnClickListener(clickListener)
+        binding.registerScreenReturnButton.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 }

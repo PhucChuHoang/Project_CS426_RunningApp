@@ -1,15 +1,15 @@
 package com.example.project_cs426_runningapp.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.example.project_cs426_runningapp.databinding.FragmentLogInBinding
-import com.google.firebase.auth.FirebaseAuth
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.project_cs426_runningapp.R
+import com.example.project_cs426_runningapp.databinding.FragmentLogInBinding
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -82,5 +82,9 @@ class LogInFragment : Fragment() {
             }
         }
         binding.loginScreenLoginButton.setOnClickListener(clickListener)
+
+        binding.loginScreenReturnButton.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 }
