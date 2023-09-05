@@ -1,5 +1,6 @@
 package com.example.project_cs426_runningapp.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -38,13 +39,35 @@ class LogInFragment : Fragment() {
         val clickListener = View.OnClickListener { v ->
             when (v) {
                 binding.loginScreenLoginButton -> {
+                    if (binding.loginScreenEmailEditText.text.toString().isEmpty()) {
+                        createDialog("Login Error!!!", "Please enter your email.")
+                        return@OnClickListener
+                    }
+                    else if (binding.loginScreenPasswordEditText.text.toString().isEmpty()) {
+                        createDialog("Login Error!!!", "Please enter your password.")
+                        return@OnClickListener
+                    }
                     if (!isNavigationInProgress) { // Check if navigation is in progress
                         isNavigationInProgress = true // Set the flag to true
                         val email = binding.loginScreenEmailEditText.text.toString()
                         val password = binding.loginScreenPasswordEditText.text.toString()
                         auth.signInWithEmailAndPassword(email, password)
                             .addOnCompleteListener(requireActivity()) { task ->
+                                val view = requireActivity().currentFocus
+                                if (view != null) {
+                                    val imm =
+                                        requireActivity().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+                                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+                                }
                                 if (task.isSuccessful) {
+                                    if (!auth.currentUser!!.isEmailVerified) {
+                                        createDialog("Login Error!!!", "Please verify your email.")
+                                        auth.signOut()
+                                        binding.loginScreenPasswordEditText.clearFocus()
+                                        binding.loginScreenPasswordEditText.text?.clear()
+                                        isNavigationInProgress = false // Reset the flag
+                                        return@addOnCompleteListener
+                                    }
                                     Toast.makeText(
                                         requireContext(),
                                         "Log in successfully.",
@@ -69,22 +92,40 @@ class LogInFragment : Fragment() {
                                         findNavController().navigate(R.id.action_logInFragment_to_homeFragment)
                                     }
                                 } else {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Log in failed.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    val view = requireActivity().currentFocus
+                                    if (view != null) {
+                                        val imm =
+                                            requireActivity().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+                                        imm.hideSoftInputFromWindow(view.windowToken, 0)
+                                    }
+                                    createDialog("Login Error!!!", "Email or password is incorrect.")
+                                    binding.loginScreenPasswordEditText.clearFocus()
+                                    binding.loginScreenPasswordEditText.text?.clear()
                                     isNavigationInProgress = false // Reset the flag
                                 }
                             }
                     }
                 }
+                binding.loginScreenReturnButton -> {
+                    findNavController().popBackStack()
+                }
+                binding.forgotPasswordButton -> {
+                    findNavController().navigate(R.id.action_logInFragment_to_forgotPasswordFragment)
+                }
             }
         }
         binding.loginScreenLoginButton.setOnClickListener(clickListener)
+        binding.loginScreenReturnButton.setOnClickListener(clickListener)
+        binding.forgotPasswordButton.setOnClickListener(clickListener)
+    }
 
-        binding.loginScreenReturnButton.setOnClickListener {
-            findNavController().popBackStack()
-        }
+    private fun createDialog(title: String, message: String) {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("OK") { _, _ ->
+
+            }
+        alertDialogBuilder.show()
     }
 }
