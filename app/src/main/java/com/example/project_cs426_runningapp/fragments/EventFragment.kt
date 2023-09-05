@@ -56,37 +56,6 @@ class EventFragment : Fragment() {
 
         }
 
-        val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
-        var email = sharedPreferences.getString("email", null)
-
-        val storageReference = Firebase.storage.reference
-
-        var profileRef = storageReference.child("images/" + email + "_profile.jpg")
-
-        val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
-
-        // Create parent directories if they don't exist
-        val parentDir = File(localFilePath).parentFile
-        if (!parentDir.exists()) {
-            parentDir.mkdirs()
-        }
-
-        val localFile = File(localFilePath)
-
-        if (localFile.exists()) {
-            // If it exists, delete it
-            localFile.delete()
-            Log.d("Login Delete","Image deleted")
-        }
-
-        profileRef.getFile(localFile)
-            .addOnSuccessListener { taskSnapshot ->
-
-            }
-            .addOnFailureListener { exception ->
-                // Handle any errors that occurred during the download
-            }
-
         return binding.root
     }
 

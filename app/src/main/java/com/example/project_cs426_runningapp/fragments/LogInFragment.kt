@@ -35,9 +35,19 @@ class LogInFragment : Fragment() {
         val clickListener = View.OnClickListener { v ->
             when (v) {
                 binding.loginScreenLoginButton -> {
-                    if (binding.loginScreenEmailEditText.text.toString().isEmpty()) {
-                        createDialog("Login Error!!!", "Please enter your email.")
-                        return@OnClickListener
+                    val email = binding.loginScreenEmailEditText.text.toString()
+                    val password = binding.loginScreenPasswordEditText.text.toString()
+
+                    val storageReference = Firebase.storage("gs://cs426-project.appspot.com").reference
+
+                    var profileRef = storageReference.child("images/" + email + "_profile.jpg")
+
+                    val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
+
+                    // Create parent directories if they don't exist
+                    val parentDir = File(localFilePath).parentFile
+                    if (!parentDir.exists()) {
+                        parentDir.mkdirs()
                     }
                     else if (binding.loginScreenPasswordEditText.text.toString().isEmpty()) {
                         createDialog("Login Error!!!", "Please enter your password.")
