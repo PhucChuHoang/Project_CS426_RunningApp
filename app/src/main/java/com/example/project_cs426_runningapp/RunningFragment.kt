@@ -1,9 +1,12 @@
 package com.example.project_cs426_runningapp
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
+
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -176,8 +179,19 @@ class RunningFragment : Fragment() {
             val caloriesBurned = ((distanceInMeters / 1000f) * weight).toLong()
             var email: String? = null
             val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
+
+
+            val sharedPref = requireActivity().getSharedPreferences("sharedPrefQ", 0)
+            val baos = ByteArrayOutputStream()
+            val bitmap = bmp
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+            val encodedImage = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT)
+            with(sharedPref.edit()) {
+                putString("encodedImage", encodedImage)
+                apply()
+            }
+
             email = sharedPreferences.getString("email", null)
-            var convertedBmp = fromBitmap(bmp)
             var db = FirebaseFirestore.getInstance()
             var count : Long
             count  = 1
@@ -190,7 +204,7 @@ class RunningFragment : Fragment() {
 
                     val totalEvent = aRun.size()
                     count = (totalEvent+1).toLong()
-                    val run = Run(count,convertedBmp, dateTimestamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned,email)
+                    val run = Run(count,bmp, dateTimestamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned,email)
                     Log.d("countRun", count.toString())
                     run.saveRun()
                     Snackbar.make(

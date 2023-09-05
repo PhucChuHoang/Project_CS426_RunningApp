@@ -56,31 +56,27 @@ class RunAdapter(private val dataSet: ArrayList<Run>) :
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-       // Glide.with(viewHolder.ivRunImage.context).load(toBitmap(dataSet[position].byteImgString)).into(viewHolder.ivRunImage)
+        Glide.with(viewHolder.ivRunImage.context).load(dataSet[position].Img).into(viewHolder.ivRunImage)
         val calendar = Calendar.getInstance().apply {
             timeInMillis = dataSet[position].timestamp
         }
         val dateFormat = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
         viewHolder.tvDate.text = dateFormat.format(calendar.time)
 
-        val avgSpeed = "${dataSet[position].avgSpeedInKMH}km/h"
+        val avgSpeed = "${dataSet[position].avgSpeedInKMH} km/h"
         viewHolder.tvAvgSpeed.text = avgSpeed
 
-        val distanceInKm = "${dataSet[position].distanceInMeters / 1000f}km"
+        val distanceInKm = "${dataSet[position].distanceInMeters / 1000f} km"
         viewHolder.tvDistance.text = distanceInKm
 
         viewHolder.tvTime.text = TrackingUtility.getFormattedStopWatchTime(dataSet[position].timeInMillis)
 
-        val caloriesBurned = "${dataSet[position].caloriesBurned}kcal"
+        val caloriesBurned = "${dataSet[position].caloriesBurned} kcal"
         viewHolder.tvCalories.text = caloriesBurned
     }
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = dataSet.size
-    private fun toBitmap(string: String): Bitmap {
-        Log.d("toBitmap", string)
-        val byteArray = string.toByteArray()
-        Log.d("byteArraySize", String(byteArray))
-        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-    }
+
+
 
 }

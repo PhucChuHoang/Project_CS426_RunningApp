@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import com.bumptech.glide.Glide
 import androidx.fragment.app.Fragment
@@ -23,6 +24,7 @@ import com.example.project_cs426_runningapp.run.Run
 import com.example.project_cs426_runningapp.run.RunAdapter
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -72,56 +74,147 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
         val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
         var email = sharedPreferences.getString("email", null)
-
-//        val runAdapter = RunAdapter(runArray)
-//        val recyclerView: RecyclerView = binding.rvRuns
-//        var layoutManager = LinearLayoutManager(requireContext())
-//        recyclerView.layoutManager = layoutManager
-//        recyclerView.adapter = runAdapter
-
-
-
-
+        Log.d("email",email.toString())
             db.collection("aRun")
                 .whereEqualTo("email", email)
                 .get()
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
                         val ID = document.data?.get("ID") as Long
-                        var byteImgString = document.data?.get("byteImgString") as String
                         var timestamp = document.data?.get("timestamp") as Long
                         var avgSpeedInKMH = document.data?.get("avgSpeedInKMH") as Double
                         var distanceInMeters = document.data?.get("distanceInMeters") as Long
                         var timeInMillis = document.data?.get("timeInMillis") as Long
                         var caloriesBurned = document.data?.get("caloriesBurned") as Long
-                        var email = document.data?.get("email") as String
-                        var run = Run(ID,byteImgString,timestamp,avgSpeedInKMH,distanceInMeters,timeInMillis,caloriesBurned,email)
-                        if (byteImgString != null) runArray.add(run)
+                        var emailInDoc = document.data?.get("email") as String
+
+                        val storage = Firebase.storage("gs://cs426-project.appspot.com")
+                        var storageRef = storage.reference
+                        var runImageRef = storageRef.child("runs/" + emailInDoc + "_" + "$ID" + ".PNG")
+                        var tmpID = ID.toInt()
+                        if (emailInDoc == "quoclexx@gmail.com" && (tmpID == 1 || tmpID == 2 || tmpID == 3 || tmpID == 4 || tmpID == 5)) continue
+                        if (timestamp == null || ID == null) continue
+                        val ONE_MEGABYTE: Long = 1024 * 1024 * 5
+
+                        runImageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener { byteArr ->
+                            var bmp = toBitmap(byteArr)
+                            var run = Run(ID,bmp,timestamp,avgSpeedInKMH,distanceInMeters,timeInMillis,caloriesBurned,emailInDoc)
+                            if (bmp != null) runArray.add(run)
+
+                            runArray.sortByDescending { it.ID }
+                            var sumM : Long
+                            var kmleft = binding.kmLeft
+                            var kmDone = binding.kmDone
+                            var progresss = binding.progress
+                            var level = binding.level
+                            sumM = 0
+                            for (run in runArray)
+                            {
+                                sumM += run.distanceInMeters
+                            }
+                            var sumKM : Int
+                            sumKM = (sumM/1000f).toInt()
+                            if (sumKM > 100)
+                            {
+                                kmleft.text = "0 km left"
+                                kmDone.text = "$sumKM Km done"
+                                progresss.progress = 100
+                            }
+                            else
+                            {
+                                var valKmLeft = 10 - sumKM
+                                kmleft.text = "$valKmLeft km left"
+                                kmDone.text = "$sumKM Km done"
+                                progresss.progress = sumKM.toInt()
+                            }
+                            if (sumKM < 1)
+                            {
+                                level.text = "beginner"
+                            }
+                            else if (sumKM < 3)
+                            {
+                                level.text = "Specialist"
+                            }
+                            else level.text = "Expert"
+                            Log.d("AdapterOnSuccess", "encodeed is not null, Start Adapter!")
+                            val runAdapter = RunAdapter(runArray)
+                            val recyclerView: RecyclerView = binding.rvRuns
+                            var layoutManager = LinearLayoutManager(requireContext())
+                            recyclerView.layoutManager = layoutManager
+                            recyclerView.adapter = runAdapter
+                            // Data for "images/island.jpg" is returned, use this as needed
+                        }
+
+                            .addOnFailureListener {
+                            val sharedPref = requireActivity().getSharedPreferences("sharedPrefQ", 0)
+                            val encodedImage = sharedPref.getString("encodedImage", "DEFAULT")
+                            if (encodedImage != "DEFAULT") {
+                                val imageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
+                                val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+
+                                var bmp = decodedImage
+                                var run = Run(ID,bmp,timestamp,avgSpeedInKMH,distanceInMeters,timeInMillis,caloriesBurned,emailInDoc)
+                                if (bmp != null) runArray.add(run)
+                                runArray.sortByDescending { it.ID }
+                                var sumM : Long
+                                var kmleft = binding.kmLeft
+                                var kmDone = binding.kmDone
+                                var progresss = binding.progress
+                                var level = binding.level
+                                sumM = 0
+                                for (run in runArray)
+                                {
+                                    sumM += run.distanceInMeters
+                                }
+                                var sumKM : Int
+                                sumKM = (sumM/1000f).toInt()
+                                if (sumKM > 100)
+                                {
+                                    kmleft.text = "0 km left"
+                                    kmDone.text = "$sumKM Km done"
+                                    progresss.progress = 100
+                                }
+                                else
+                                {
+                                    var valKmLeft = 10 - sumKM
+                                    kmleft.text = "$valKmLeft km left"
+                                    kmDone.text = "$sumKM Km done"
+                                    progresss.progress = sumKM.toInt()
+                                }
+                                if (sumKM < 1)
+                                {
+                                    level.text = "beginner"
+                                }
+                                else if (sumKM < 3)
+                                {
+                                    level.text = "Specialist"
+                                }
+                                else level.text = "Expert"
+                                Log.d("AdapterOnfail", "encodeed is not null, Start Adapter!")
+                                val runAdapter = RunAdapter(runArray)
+                                val recyclerView: RecyclerView = binding.rvRuns
+                                var layoutManager = LinearLayoutManager(requireContext())
+                                recyclerView.layoutManager = layoutManager
+                                recyclerView.adapter = runAdapter
+                            }
+                                else Log.d("encodedImage", "encodeed is null")
+
+                        }
 
                     }
-                        val runAdapter = RunAdapter(runArray)
-                        for (run in runArray)
-                        {
-                            Log.d("idInSetUP", run.ID.toString())
-                            Log.d("emailInSetUP", run.email.toString())
-                            Log.d("timestamp", run.timestamp.toString())
-                        }
-                        val recyclerView: RecyclerView = binding.rvRuns
-                        var layoutManager = LinearLayoutManager(requireContext())
-                        recyclerView.layoutManager = layoutManager
-                        recyclerView.adapter = runAdapter
                     }
 
                 .addOnFailureListener { exception ->
                     Log.w("TAG", "Error getting documents: ", exception)
                 }
 
-
     }
 
 
 
-
+    private fun toBitmap(bytes: ByteArray): Bitmap {
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    }
     private fun requestPermissions() {
         if(TrackingUtility.hasLocationPermissions(requireContext())) {
             return
