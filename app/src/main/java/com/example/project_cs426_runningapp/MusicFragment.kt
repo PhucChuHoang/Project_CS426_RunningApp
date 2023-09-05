@@ -66,17 +66,12 @@ class MusicFragment : Fragment() {
             ?.setResultCallback { bitmap ->
                 val palette = Palette.from(bitmap).generate()
                 val dominantColor = palette.getDominantColor(Color.WHITE)
-                val contrastColor = getContrastColor(dominantColor)
 
                 // Set the background color of MusicBackGround
                 binding.MusicBackGround.background = createGradientBackground(dominantColor)
 
                 // Set the album cover image
                 binding.albumCoverImageView.setImageBitmap(bitmap)
-
-                // Set text colors with contrast to the dominant color
-                binding.trackNameTextView.setTextColor(contrastColor)
-                binding.artistNameTextView.setTextColor(contrastColor)
             }
         if (isPlaying) {
             binding.playerContinue.visibility = View.GONE
@@ -140,6 +135,12 @@ class MusicFragment : Fragment() {
             // If the dominant color is dark, transition to black
             intArrayOf(dominantColor, middleColor, Color.BLACK)
         }
+
+
+        val contrastColor = getContrastColor(middleColor)
+        // Set text colors with contrast to the dominant color
+        binding.trackNameTextView.setTextColor(contrastColor)
+        binding.artistNameTextView.setTextColor(contrastColor)
 
         return GradientDrawable().apply {
             colors = gradientColors
