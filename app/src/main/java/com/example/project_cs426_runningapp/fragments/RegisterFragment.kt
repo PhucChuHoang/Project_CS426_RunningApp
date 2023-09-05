@@ -1,13 +1,12 @@
 package com.example.project_cs426_runningapp.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentRegisterBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -25,7 +24,7 @@ class RegisterFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentRegisterBinding.inflate(inflater, container, false)
         auth = FirebaseAuth.getInstance()
         db = Firebase.firestore
@@ -41,9 +40,32 @@ class RegisterFragment : Fragment() {
                     val fullname = binding.registerScreenFullNameEditText.text.toString()
                     val email = binding.registerScreenEmailEditText.text.toString()
                     val password = binding.registerScreenPasswordEditText.text.toString()
+                    if (fullname.isEmpty()) {
+                        createDialog("Registration Error!!!", "Please enter your full name.")
+                        return@OnClickListener
+                    }
+                    else if (email.isEmpty()) {
+                        createDialog("Registration Error!!!", "Please enter your email.")
+                        return@OnClickListener
+                    }
+                    else if (password.isEmpty()) {
+                        createDialog("Registration Error!!!", "Please enter your password.")
+                        return@OnClickListener
+                    }
+                    else if (password.length < 6) {
+                        createDialog("Registration Error!!!", "Password must be at least 6 characters.")
+                        return@OnClickListener
+                    }
                     auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(requireActivity()) { task ->
+                            val view = requireActivity().currentFocus
+                            if (view != null) {
+                                val imm =
+                                    requireActivity().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+                                imm.hideSoftInputFromWindow(view.windowToken, 0)
+                            }
                             if (task.isSuccessful) {
+                                auth.currentUser?.sendEmailVerification()
                                 val user = hashMapOf(
                                     "fullname" to fullname,
                                     "email" to email,
@@ -51,25 +73,11 @@ class RegisterFragment : Fragment() {
                                     "phone" to "",
                                     "country" to "",
                                     "sex" to "",
-                                    "address" to ""
+                                    "address" to "",
                                 )
                                 db.collection("users")
                                     .document(email)
                                     .set(user)
-                                    .addOnSuccessListener {
-                                        Toast.makeText(
-                                            requireContext(),
-                                            "Register successfully.",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                    .addOnFailureListener {
-                                        Toast.makeText(
-                                            requireContext(),
-                                            "Register failed.",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
                                 // TODO: Move this activity code to start place
                                 val activity = hashMapOf(
                                     "ac_id" to "activity1",
@@ -92,22 +100,43 @@ class RegisterFragment : Fragment() {
                                     val editor = sharedPreferences.edit()
                                     editor.putString("name", name)
                                     editor.apply()
-                                    findNavController().navigate(R.id.action_registerFragment_to_homeFragment)
                                 }
+                                val alertDialogBuilder = AlertDialog.Builder(requireContext())
+                                alertDialogBuilder.setTitle("Registration Successful!")
+                                    .setMessage("Please check your email to verify your account.")
+                                    .setPositiveButton("OK") { _, _ ->
+                                        findNavController().popBackStack()
+                                    }
+                                alertDialogBuilder.show()
                             } else {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Register failed.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                val alertDialogBuilder = AlertDialog.Builder(requireContext())
+                                alertDialogBuilder.setTitle("Registration Error!!!")
+                                    .setMessage("Email is already in use.")
+                                    .setPositiveButton("OK") { _, _ ->
+                                        binding.registerScreenPasswordEditText.clearFocus()
+                                        binding.registerScreenPasswordEditText.text?.clear()
+                                    }
+                                alertDialogBuilder.show()
                             }
                         }
+                }
+                binding.registerScreenReturnButton -> {
+                    findNavController().popBackStack()
                 }
             }
         }
         binding.registerScreenRegisterButton.setOnClickListener(clickListener)
-        binding.registerScreenReturnButton.setOnClickListener {
-            findNavController().popBackStack()
-        }
+        binding.registerScreenReturnButton.setOnClickListener(clickListener)
     }
+
+    private fun createDialog(title: String, message: String) {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("OK") { _, _ ->
+
+            }
+        alertDialogBuilder.show()
+    }
+
 }

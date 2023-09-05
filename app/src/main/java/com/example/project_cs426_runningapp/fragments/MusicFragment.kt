@@ -1,16 +1,20 @@
 package com.example.project_cs426_runningapp.fragments
 
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.ColorUtils
+import androidx.fragment.app.Fragment
+import androidx.palette.graphics.Palette
 import com.example.project_cs426_runningapp.R
+import com.example.project_cs426_runningapp.databinding.FragmentMusicBinding
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
-import com.example.project_cs426_runningapp.databinding.FragmentMusicBinding
 
 class MusicFragment : Fragment() {
     private val clientID = "12b274aab0934f67942cba17bd6770c7"
@@ -61,6 +65,13 @@ class MusicFragment : Fragment() {
         binding.artistNameTextView.text = track.artist.name
         spotifyAppRemote?.imagesApi?.getImage(track.imageUri)
             ?.setResultCallback { bitmap ->
+                val palette = Palette.from(bitmap).generate()
+                val dominantColor = palette.getDominantColor(Color.WHITE)
+
+                // Set the background color of MusicBackGround
+                binding.MusicBackGround.background = createGradientBackground(dominantColor)
+
+                // Set the album cover image
                 binding.albumCoverImageView.setImageBitmap(bitmap)
             }
         if (isPlaying) {
@@ -112,6 +123,57 @@ class MusicFragment : Fragment() {
         super.onDestroy()
         spotifyAppRemote?.let {
             SpotifyAppRemote.disconnect(it)
+        }
+    }
+    private fun createGradientBackground(dominantColor: Int): GradientDrawable {
+        val luminance = calculateLuminance(dominantColor)
+        val middleColor = calculateMiddleColor(luminance)
+
+        val gradientColors = intArrayOf(dominantColor, middleColor, dominantColor)
+
+        val contrastColor = getContrastColor(middleColor)
+        // Set text colors with contrast to the dominant color
+        binding.trackNameTextView.setTextColor(contrastColor)
+        binding.artistNameTextView.setTextColor(contrastColor)
+
+        return GradientDrawable().apply {
+            colors = gradientColors
+            gradientType = GradientDrawable.LINEAR_GRADIENT
+            orientation = GradientDrawable.Orientation.TOP_BOTTOM
+        }
+    }
+
+    private fun calculateLuminance(color: Int): Double {
+        val r = Color.red(color) / 255.0
+        val g = Color.green(color) / 255.0
+        val b = Color.blue(color) / 255.0
+        return 0.299 * r + 0.587 * g + 0.114 * b
+    }
+
+    private fun calculateMiddleColor(luminance: Double): Int {
+        // Calculate the middle color based on luminance
+        val middleLuminance = if (luminance > 0.5) 0.2 else 0.8
+        val interpolatedColor = ColorUtils.blendARGB(
+            Color.BLACK,
+            Color.WHITE,
+            middleLuminance.toFloat()
+        )
+        return interpolatedColor
+    }
+    private fun getContrastColor(dominantColor: Int): Int {
+        // Calculate the luminance of the dominant color
+        val r = Color.red(dominantColor)
+        val g = Color.green(dominantColor)
+        val b = Color.blue(dominantColor)
+        val luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+
+        // Determine the contrast color based on luminance
+        return if (luminance > 0.5) {
+            // Use black for light backgrounds
+            Color.BLACK
+        } else {
+            // Use white for dark backgrounds
+            Color.WHITE
         }
     }
 }
