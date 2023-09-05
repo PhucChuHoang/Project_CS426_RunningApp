@@ -41,6 +41,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         binding.fullName.text = "Hello, $name"
         requestPermissions()
         if(HomeViewModel.get().isNotBlank())
