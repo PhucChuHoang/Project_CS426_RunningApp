@@ -31,8 +31,11 @@ class ForgotPasswordFragment : Fragment() {
                 binding.forgotPasswordReturnButton -> {
                     findNavController().popBackStack()
                 }
-
                 binding.forgotPasswordSendEmailButton -> {
+                    if (binding.resetEmailEditText.text.toString().isEmpty()) {
+                        createDialog("Reset password error!!!", "Reset email must not be empty.")
+                        return@OnClickListener
+                    }
                     auth.sendPasswordResetEmail(binding.resetEmailEditText.text.toString())
                         .addOnCompleteListener { task ->
                             val view = requireActivity().currentFocus
@@ -59,7 +62,9 @@ class ForgotPasswordFragment : Fragment() {
         alertDialogBuilder.setTitle(title)
             .setMessage(message)
             .setPositiveButton("OK") { _, _ ->
-                findNavController().popBackStack()
+                if (message != "Reset email must not be empty.") {
+                    findNavController().popBackStack()
+                }
             }
         alertDialogBuilder.show()
     }
