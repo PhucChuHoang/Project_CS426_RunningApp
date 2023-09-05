@@ -16,7 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-
 class LogInFragment : Fragment() {
     private lateinit var binding: FragmentLogInBinding
     private lateinit var auth: FirebaseAuth
@@ -30,12 +29,9 @@ class LogInFragment : Fragment() {
         db = FirebaseFirestore.getInstance()
         return binding.root
     }
-
     private var isNavigationInProgress = false // Add this flag
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val clickListener = View.OnClickListener { v ->
             when (v) {
                 binding.loginScreenLoginButton -> {
@@ -78,16 +74,13 @@ class LogInFragment : Fragment() {
                                             .document(email)
                                             .get()
                                             .await()
-
                                         val fieldNames = listOf("fullname", "address", "country", "email", "password", "phone", "sex")
                                         val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
                                         val editor = sharedPreferences.edit()
-
                                         for (fieldName in fieldNames) {
                                             val value = documentSnapshot.getString(fieldName)
                                             editor.putString(fieldName, value)
                                         }
-
                                         editor.apply()
                                         findNavController().navigate(R.id.action_logInFragment_to_homeFragment)
                                     }
