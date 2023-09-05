@@ -78,15 +78,6 @@ class ProfileFragment : Fragment() {
         val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
         val localFile = File(localFilePath)
 
-        if (!localFile.exists()) {
-            // If the file doesn't exist, create it
-            try {
-                localFile.createNewFile()
-            } catch (e: Exception) {
-                // Handle file creation error
-            }
-        }
-
         Glide.with(this)
             .load(localFile)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
@@ -229,28 +220,6 @@ class ProfileFragment : Fragment() {
             // ...
             Log.d("Image upload", "It's up bro")
         }
-
-        val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
-
-        val parentDir = File(localFilePath).parentFile
-        if (!parentDir.exists()) {
-            parentDir.mkdirs()
-        }
-
-        val localFile = File(localFilePath)
-
-        if (localFile.exists()) {
-            // If it exists, delete it
-            localFile.delete()
-        }
-
-        profileRef.getFile(localFile)
-            .addOnSuccessListener { taskSnapshot ->
-
-            }
-            .addOnFailureListener { exception ->
-                // Handle any errors that occurred during the download
-            }
     }
 
     fun getBitmapFromView(view: View): Bitmap {
