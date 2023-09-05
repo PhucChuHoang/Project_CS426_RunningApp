@@ -77,6 +77,9 @@
         <action
             android:id="@+id/action_logInFragment_to_dontKnowFragment"
             app:destination="@id/dontKnowFragment" />
+        <action
+            android:id="@+id/action_logInFragment_to_forgotPasswordFragment"
+            app:destination="@id/forgotPasswordFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
@@ -106,4 +109,9 @@
         android:name="com.example.project_cs426_runningapp.fragments.SettingFragment"
         android:label="fragment_setting"
         tools:layout="@layout/fragment_setting" />
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.example.project_cs426_runningapp.fragments.ForgotPasswordFragment"
+        android:label="fragment_forgot_password"
+        tools:layout="@layout/fragment_forgot_password" />
 </navigation>
