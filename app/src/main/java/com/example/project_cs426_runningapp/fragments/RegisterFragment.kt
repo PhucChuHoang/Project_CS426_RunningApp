@@ -40,6 +40,22 @@ class RegisterFragment : Fragment() {
                     val fullname = binding.registerScreenFullNameEditText.text.toString()
                     val email = binding.registerScreenEmailEditText.text.toString()
                     val password = binding.registerScreenPasswordEditText.text.toString()
+                    if (fullname.isEmpty()) {
+                        createDialog("Registration Error!!!", "Please enter your full name.")
+                        return@OnClickListener
+                    }
+                    else if (email.isEmpty()) {
+                        createDialog("Registration Error!!!", "Please enter your email.")
+                        return@OnClickListener
+                    }
+                    else if (password.isEmpty()) {
+                        createDialog("Registration Error!!!", "Please enter your password.")
+                        return@OnClickListener
+                    }
+                    else if (password.length < 6) {
+                        createDialog("Registration Error!!!", "Password must be at least 6 characters.")
+                        return@OnClickListener
+                    }
                     auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(requireActivity()) { task ->
                             val view = requireActivity().currentFocus
@@ -111,6 +127,16 @@ class RegisterFragment : Fragment() {
         }
         binding.registerScreenRegisterButton.setOnClickListener(clickListener)
         binding.registerScreenReturnButton.setOnClickListener(clickListener)
+    }
+
+    private fun createDialog(title: String, message: String) {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("OK") { _, _ ->
+
+            }
+        alertDialogBuilder.show()
     }
 
 }
