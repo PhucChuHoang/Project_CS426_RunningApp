@@ -7,10 +7,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.project_cs426_runningapp.R
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.palette.graphics.Palette
+import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentMusicBinding
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
@@ -129,14 +129,7 @@ class MusicFragment : Fragment() {
         val luminance = calculateLuminance(dominantColor)
         val middleColor = calculateMiddleColor(luminance)
 
-        val gradientColors = if (luminance > 0.5) {
-            // If the dominant color is light, transition to white
-            intArrayOf(dominantColor, middleColor, Color.WHITE)
-        } else {
-            // If the dominant color is dark, transition to black
-            intArrayOf(dominantColor, middleColor, Color.BLACK)
-        }
-
+        val gradientColors = intArrayOf(dominantColor, middleColor, dominantColor)
 
         val contrastColor = getContrastColor(middleColor)
         // Set text colors with contrast to the dominant color
