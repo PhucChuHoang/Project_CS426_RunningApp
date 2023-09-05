@@ -157,6 +157,21 @@ class ProfileFragment : Fragment() {
             view.findViewById<TextView>(R.id.undo_profile_button).visibility = View.INVISIBLE
         }
 
+        view.findViewById<TextView>(R.id.undo_profile_button).setOnClickListener {
+            val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
+            val localFile = File(localFilePath)
+
+            Glide.with(this)
+                .load(localFile)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .placeholder(R.drawable.thang_ngot)
+                .into(profile_img)
+
+            view.findViewById<TextView>(R.id.save_profile_button).visibility = View.INVISIBLE
+            view.findViewById<TextView>(R.id.undo_profile_button).visibility = View.INVISIBLE
+        }
+
         val edit_profile_button = view.findViewById<ImageView>(R.id.edit_profile_button)
 
         edit_profile_button.setOnClickListener {

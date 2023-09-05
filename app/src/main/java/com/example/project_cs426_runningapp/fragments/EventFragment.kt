@@ -76,7 +76,6 @@ class EventFragment : Fragment() {
         if (localFile.exists()) {
             // If it exists, delete it
             localFile.delete()
-            Log.d("Login Delete","Image deleted")
         }
 
         profileRef.getFile(localFile)
