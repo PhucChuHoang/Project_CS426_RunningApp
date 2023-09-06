@@ -33,100 +33,70 @@ class RegisterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.registerScreenRegisterButton.setOnClickListener {
+            handleRegisterUser()
+        }
+        binding.registerScreenReturnButton.setOnClickListener {
+            findNavController().popBackStack()
+        }
+    }
 
-        val clickListener = View.OnClickListener { v ->
-            when (v) {
-                binding.registerScreenRegisterButton -> {
-                    val fullname = binding.registerScreenFullNameEditText.text.toString()
-                    val email = binding.registerScreenEmailEditText.text.toString()
-                    val password = binding.registerScreenPasswordEditText.text.toString()
-                    if (fullname.isEmpty()) {
-                        createDialog("Registration Error!!!", "Please enter your full name.")
-                        return@OnClickListener
+    private fun handleRegisterUser() {
+        val fullname = binding.registerScreenFullNameEditText.text.toString()
+        val email = binding.registerScreenEmailEditText.text.toString()
+        val password = binding.registerScreenPasswordEditText.text.toString()
+
+        when {
+            fullname.isEmpty() -> createDialog("Registration Error!!!", "Please enter your full name.")
+            email.isEmpty() -> createDialog("Registration Error!!!", "Please enter your email.")
+            password.isEmpty() -> createDialog("Registration Error!!!", "Please enter your password.")
+            password.length < 6 -> createDialog("Registration Error!!!", "Password must be at least 6 characters.")
+            else -> registerUser(fullname, email, password)
+        }
+    }
+
+    private fun registerUser(fullname: String, email: String, password: String) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(requireActivity()) { task ->
+                if (task.isSuccessful) {
+                    auth.currentUser?.sendEmailVerification()
+                    val user = hashMapOf(
+                        "fullname" to fullname,
+                        "email" to email,
+                        "password" to password,
+                        "phone" to "",
+                        "country" to "",
+                        "sex" to "",
+                        "address" to "",
+                    )
+                    db.collection("users")
+                        .document(email)
+                        .set(user)
+
+                    // Initialize activity data
+                    val activity = hashMapOf(
+                        "ac_id" to "activity1",
+                        "distance" to 0,
+                        "screenShot" to 0,
+                        "duration" to 0,
+                        "calories" to 0,
+                    )
+                    db.collection("users")
+                        .document(email)
+                        .collection("activities")
+                        .document("activity1")
+                        .set(activity)
+
+                    // Save user's name to SharedPreferences
+                    CoroutineScope(Dispatchers.Main).launch {
+                        saveUserName(fullname)
                     }
-                    else if (email.isEmpty()) {
-                        createDialog("Registration Error!!!", "Please enter your email.")
-                        return@OnClickListener
-                    }
-                    else if (password.isEmpty()) {
-                        createDialog("Registration Error!!!", "Please enter your password.")
-                        return@OnClickListener
-                    }
-                    else if (password.length < 6) {
-                        createDialog("Registration Error!!!", "Password must be at least 6 characters.")
-                        return@OnClickListener
-                    }
-                    auth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(requireActivity()) { task ->
-                            val view = requireActivity().currentFocus
-                            if (view != null) {
-                                val imm =
-                                    requireActivity().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
-                                imm.hideSoftInputFromWindow(view.windowToken, 0)
-                            }
-                            if (task.isSuccessful) {
-                                auth.currentUser?.sendEmailVerification()
-                                val user = hashMapOf(
-                                    "fullname" to fullname,
-                                    "email" to email,
-                                    "password" to password,
-                                    "phone" to "",
-                                    "country" to "",
-                                    "sex" to "",
-                                    "address" to "",
-                                )
-                                db.collection("users")
-                                    .document(email)
-                                    .set(user)
-                                // TODO: Move this activity code to start place
-                                val activity = hashMapOf(
-                                    "ac_id" to "activity1",
-                                    "distance" to 0,
-                                    "screenShot" to 0,
-                                    "duration" to 0,
-                                    "calories" to 0,
-                                )
-                                db.collection("users")
-                                    .document(email)
-                                    .collection("activities")
-                                    .document("activity1")  //TODO: change to proper activity id
-                                    .set(activity)
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    val name = fullname
-                                    val sharedPreferences = requireActivity().getSharedPreferences(
-                                        "sharedPrefs",
-                                        0
-                                    )
-                                    val editor = sharedPreferences.edit()
-                                    editor.putString("name", name)
-                                    editor.apply()
-                                }
-                                val alertDialogBuilder = AlertDialog.Builder(requireContext())
-                                alertDialogBuilder.setTitle("Registration Successful!")
-                                    .setMessage("Please check your email to verify your account.")
-                                    .setPositiveButton("OK") { _, _ ->
-                                        findNavController().popBackStack()
-                                    }
-                                alertDialogBuilder.show()
-                            } else {
-                                val alertDialogBuilder = AlertDialog.Builder(requireContext())
-                                alertDialogBuilder.setTitle("Registration Error!!!")
-                                    .setMessage("Email is already in use.")
-                                    .setPositiveButton("OK") { _, _ ->
-                                        binding.registerScreenPasswordEditText.clearFocus()
-                                        binding.registerScreenPasswordEditText.text?.clear()
-                                    }
-                                alertDialogBuilder.show()
-                            }
-                        }
-                }
-                binding.registerScreenReturnButton -> {
-                    findNavController().popBackStack()
+
+                    createDialog("Registration Successful!", "Please check your email for verification.")
+                } else {
+                    createDialog("Registration Error!!!", "Email has been used.")
                 }
             }
-        }
-        binding.registerScreenRegisterButton.setOnClickListener(clickListener)
-        binding.registerScreenReturnButton.setOnClickListener(clickListener)
     }
 
     private fun createDialog(title: String, message: String) {
@@ -134,9 +104,34 @@ class RegisterFragment : Fragment() {
         alertDialogBuilder.setTitle(title)
             .setMessage(message)
             .setPositiveButton("OK") { _, _ ->
-
+                if (title == "Registration Successful!")
+                    findNavController().popBackStack()
             }
         alertDialogBuilder.show()
+        hideKeyboard()
+        clearPasswordAndFocus()
     }
 
+    private fun clearPasswordAndFocus() {
+        binding.registerScreenEmailEditText.clearFocus()
+        binding.registerScreenFullNameEditText.clearFocus()
+        binding.registerScreenPasswordEditText.clearFocus()
+        binding.registerScreenPasswordEditText.text?.clear()
+    }
+
+    private fun hideKeyboard() {
+        val view = requireActivity().currentFocus
+        if (view != null) {
+            val imm =
+                requireActivity().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+    }
+
+    private fun saveUserName(fullname: String) {
+        val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
+        val editor = sharedPreferences.edit()
+        editor.putString("name", fullname)
+        editor.apply()
+    }
 }
