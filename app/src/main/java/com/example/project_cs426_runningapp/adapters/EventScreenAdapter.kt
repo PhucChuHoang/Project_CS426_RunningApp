@@ -1,4 +1,4 @@
-package com.example.project_cs426_runningapp
+package com.example.project_cs426_runningapp.adapters
 
 import android.content.Context
 import android.util.Log
@@ -8,21 +8,19 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.project_cs426_runningapp.R
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
-import org.checkerframework.checker.units.qual.s
-import org.w3c.dom.Text
 
 
 class EventAdapter(private val context: Context, private val dataSource: ArrayList<EventData>,
-                    private val profile_specific: Boolean = false) : BaseAdapter() {
+                   private val profile_specific: Boolean = false) : BaseAdapter() {
 
     private var inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
     private lateinit var db: FirebaseFirestore
 
-    private var can_join = true
+    private var can_join = false
 
     override fun getCount(): Int {
         return dataSource.size
@@ -37,6 +35,8 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        can_join = true
+
         val rowView: View
 
         if (convertView == null) {
@@ -78,6 +78,7 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
         db.collection("events")
             .document(event_data.event_id)
             .collection("participants")
+            .whereEqualTo("status", 1)
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
@@ -90,20 +91,35 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
             }
 
         join_button.setOnClickListener {
-            if (can_join) {
-                Log.d("Join", "Here")
-                join_button.text = "Joined"
-                join_button.setBackgroundResource(R.drawable.round_outline_gray)
-
+            Log.d("Can Join?", can_join.toString())
+            if (join_button.text.toString() == "Join challenge") {
                 Log.d("Email", email.toString())
 
                 if (email != null && emailArray.indexOf(email) == -1) {
+                    Log.d("Join", "Here")
+                    join_button.text = "Joined"
+                    join_button.setBackgroundResource(R.drawable.round_outline_gray)
+
                     db.collection("events")
                         .document(event_data.event_id)
                         .collection("participants").document(email).set(hashMapOf("status" to 1))
                 }
+            }
+            else {
+                if (profile_specific) {
+                    Log.d("Join", "Not anymore")
 
-                can_join = false
+                    //UI
+                    val removed_item = dataSource.get(position)
+                    dataSource.remove(removed_item)
+                    notifyDataSetChanged()
+
+                    if (email != null) {
+                        db.collection("events")
+                            .document(event_data.event_id)
+                            .collection("participants").document(email).set(hashMapOf("status" to 0))
+                    }
+                }
             }
         }
         return rowView
@@ -114,6 +130,9 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
 
         if (emailArray.indexOf(email) != -1) {
             join_button.text = "Joined"
+            if (profile_specific) {
+                join_button.text = "Withdraw"
+            }
             join_button.setBackgroundResource(R.drawable.round_outline_gray)
             can_join = false;
         }
@@ -121,6 +140,7 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
             can_join = true;
         }
     }
+
 }
 
 public class EventData(var event_name: String, var joined: Boolean, var image_name: String?,

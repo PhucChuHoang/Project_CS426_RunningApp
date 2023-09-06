@@ -28,8 +28,13 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if(destination.id == R.id.onboardingFragment || destination.id == R.id.runningFragment || destination.id == R.id.logInFragment || destination.id == R.id.registerFragment || destination.id == R.id.settingFragment || destination.id == R.id.editProfileFragment) {
-
+            if(destination.id == R.id.onboardingFragment
+                || destination.id == R.id.runningFragment
+                || destination.id == R.id.logInFragment
+                || destination.id == R.id.registerFragment
+                || destination.id == R.id.settingFragment
+                || destination.id == R.id.editProfileFragment
+                || destination.id == R.id.forgotPasswordFragment) {
                 navView.visibility = View.GONE
             } else {
                 navView.visibility = View.VISIBLE
@@ -64,6 +69,13 @@ class MainActivity : AppCompatActivity() {
         if(intent?.action == ACTION_SHOW_TRACKING_FRAGMENT) {
             val navController = findNavController(R.id.nav_host_fragment_activity_home)
             navController.navigate(R.id.action_global_runningFragment)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        auth.currentUser?.let {
+            auth.signOut()
         }
     }
 }

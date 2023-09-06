@@ -1,4 +1,4 @@
-package com.example.project_cs426_runningapp
+package com.example.project_cs426_runningapp.fragments
 
 import android.Manifest
 import android.graphics.Bitmap
@@ -13,9 +13,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentHomeBinding
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.project_cs426_runningapp.other.Constants.REQUEST_CODE_LOCATION_PERMISSION
@@ -31,6 +33,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
+import com.example.project_cs426_runningapp.ViewModel.HomeViewModel
 
 class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var binding: FragmentHomeBinding
@@ -47,14 +50,20 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         db = FirebaseFirestore.getInstance()
         val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
         name = sharedPreferences.getString("fullname", null)
-        binding.fullName.text = "Hello, $name"
+        if(HomeViewModel.get().isNotBlank())
+            binding.fullName.text = "Hello, ${HomeViewModel.get()}"
+        else binding.fullName.text = "Hello, $name"
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         binding.fullName.text = "Hello, $name"
         requestPermissions()
+        if(HomeViewModel.get().isNotBlank())
+            binding.fullName.text = "Hello, ${HomeViewModel.get()}"
+        else binding.fullName.text = "Hello, $name"
         val clickListener = View.OnClickListener { v ->
             when (v) {
                 binding.startCurrentLayout -> {
