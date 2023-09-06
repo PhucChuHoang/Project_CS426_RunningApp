@@ -1,4 +1,4 @@
-package com.example.project_cs426_runningapp.fragments
+package com.example.project_cs426_runningapp
 
 import android.app.Activity
 import android.content.Intent
