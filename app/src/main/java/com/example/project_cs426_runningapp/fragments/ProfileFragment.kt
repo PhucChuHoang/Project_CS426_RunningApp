@@ -116,6 +116,7 @@ class ProfileFragment : Fragment() {
                             .whereEqualTo("status", 1)
                             .get()
                             .addOnSuccessListener {documents2 ->
+                                Log.d("Event id profile", "${document.id}")
                                  for (document2 in documents2) {
                                     if (document2.id == email) {
                                         events_array.add(

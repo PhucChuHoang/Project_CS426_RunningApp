@@ -16,7 +16,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.squareup.picasso.Picasso
 import java.io.ByteArrayOutputStream
-
+import java.io.File
 
 class EventAdapter(private val context: Context, private val dataSource: ArrayList<EventData>,
                    private val profile_specific: Boolean = false) : BaseAdapter() {
@@ -62,15 +62,17 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
         start_date.text = "Start: " + event_data.start_date
         end_date.text = "End: " + event_data.end_date
 
-        if (!event_data.image_name.isNullOrEmpty()) {
-            val p = event_data.image_name?.split("/")?.toTypedArray()
-            val imageLink = "https://drive.google.com/uc?export=download&id=" + (p?.get(5) ?: "")
-            Picasso.with(rowView.context)
-                .load(imageLink)
-                .fit()
-                .centerCrop()
-                .into(thumbnail)
-        }
+//        if (!event_data.image_name.isNullOrEmpty()) {
+//            val p = event_data.image_name?.split("/")?.toTypedArray()
+//            val imageLink = "https://drive.google.com/uc?export=download&id=" + (p?.get(5) ?: "")
+//            Picasso.with(rowView.context)
+//                .load(imageLink)
+//                .fit()
+//                .centerCrop()
+//                .into(thumbnail)
+//        }
+
+        addEventImage(rowView, thumbnail, event_data.image_name)
 
         var emailArray = arrayListOf<String?>()
 
@@ -124,9 +126,23 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
                             .set(hashMapOf("status" to 0))
                     }
                 }
+                else {
+                    saveImage(rowView, position)
+                }
             }
         }
         return rowView
+    }
+
+    fun addEventImage(rowView: View, imageView: ImageView, position: String?) {
+        val localFilePath = File(rowView.context.filesDir, position).absolutePath
+        val localFile = File(localFilePath)
+
+        Picasso.with(rowView.context)
+            .load(localFile)
+            .centerCrop()
+            .fit()
+            .into(imageView)
     }
 
     private fun saveImage(rowView: View, position: Int) {
@@ -136,7 +152,7 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
         val storage = Firebase.storage("gs://cs426-project.appspot.com")
         var storageRef = storage.reference
 
-        var eventRef = storageRef.child("events/" + "eid" + position)
+        var eventRef = storageRef.child("events/" + "eid" + position + ".jpg")
 
         var bitmap = getBitmapFromView(thumbnail)
         val baos = ByteArrayOutputStream()
