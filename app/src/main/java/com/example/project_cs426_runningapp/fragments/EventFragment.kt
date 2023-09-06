@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.project_cs426_runningapp.adapters.EventAdapter
 import com.example.project_cs426_runningapp.adapters.EventData
 import com.example.project_cs426_runningapp.R
@@ -25,6 +26,8 @@ class EventFragment : Fragment() {
     private lateinit var binding: FragmentEventBinding
 
     private lateinit var db: FirebaseFirestore
+
+    private var total_event = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +64,17 @@ class EventFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //Change fragment
+        val clickListener = View.OnClickListener { v ->
+            when (v) {
+                binding.eventEditButton -> {
+                    findNavController().navigate(R.id.action_dontKnowFragment_to_addEventFragment2)
+                }
+            }
+        }
+
+        binding.eventEditButton.setOnClickListener(clickListener)
 
         db = FirebaseFirestore.getInstance()
 
@@ -105,6 +119,7 @@ class EventFragment : Fragment() {
     private fun setUpEventAdapter(events_array: ArrayList<EventData>, curView: View) {
         val listView = curView.findViewById<ListView>(R.id.event_list_view)
 
+        total_event = events_array.size
         val adapter = EventAdapter(curView.context, events_array)
 
         listView.adapter = adapter

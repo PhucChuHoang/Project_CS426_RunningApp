@@ -59,7 +59,11 @@
         android:id="@+id/dontKnowFragment"
         android:name="com.example.project_cs426_runningapp.fragments.EventFragment"
         android:label="fragment_dont_know"
-        tools:layout="@layout/fragment_event" />
+        tools:layout="@layout/fragment_event" >
+        <action
+            android:id="@+id/action_dontKnowFragment_to_addEventFragment2"
+            app:destination="@id/addEventFragment2" />
+    </fragment>
     <fragment
         android:id="@+id/logInFragment"
         android:name="com.example.project_cs426_runningapp.fragments.LogInFragment"
@@ -114,4 +118,9 @@
         android:name="com.example.project_cs426_runningapp.fragments.ForgotPasswordFragment"
         android:label="fragment_forgot_password"
         tools:layout="@layout/fragment_forgot_password" />
+    <fragment
+        android:id="@+id/addEventFragment2"
+        android:name="com.example.project_cs426_runningapp.fragments.AddEventFragment"
+        android:label="fragment_add_event"
+        tools:layout="@layout/fragment_add_event" />
 </navigation>

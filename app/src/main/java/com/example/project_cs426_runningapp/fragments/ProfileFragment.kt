@@ -145,9 +145,6 @@ class ProfileFragment : Fragment() {
 
         profile_image.setOnClickListener {
             openGallery()
-
-            view.findViewById<TextView>(R.id.save_profile_button).visibility = View.VISIBLE
-            view.findViewById<TextView>(R.id.undo_profile_button).visibility = View.VISIBLE
         }
 
         view.findViewById<TextView>(R.id.save_profile_button).setOnClickListener {
@@ -192,6 +189,9 @@ class ProfileFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val selectedImageUri = result.data?.data
+
+                requireView().findViewById<TextView>(R.id.save_profile_button).visibility = View.VISIBLE
+                requireView().findViewById<TextView>(R.id.undo_profile_button).visibility = View.VISIBLE
 
                 Picasso.with(requireView().context)
                     .load(selectedImageUri)
