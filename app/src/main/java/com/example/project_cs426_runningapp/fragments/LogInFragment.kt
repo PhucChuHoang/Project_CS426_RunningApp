@@ -2,6 +2,7 @@ package com.example.project_cs426_runningapp.fragments
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +13,14 @@ import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentLogInBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.io.File
+
 class LogInFragment : Fragment() {
     private lateinit var binding: FragmentLogInBinding
     private lateinit var auth: FirebaseAuth
@@ -82,6 +87,33 @@ class LogInFragment : Fragment() {
             "Log in successfully.",
             Toast.LENGTH_SHORT
         ).show()
+
+        val storageReference = Firebase.storage("gs://cs426-project.appspot.com").reference
+
+        var profileRef = storageReference.child("images/" + email + "_profile.jpg")
+
+        val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
+
+        // Create parent directories if they don't exist
+        val parentDir = File(localFilePath).parentFile
+        if (!parentDir.exists()) {
+            parentDir.mkdirs()
+        }
+
+        val localFile = File(localFilePath)
+
+        if (localFile.exists()) {
+            // If it exists, delete it
+            localFile.delete()
+        }
+
+        profileRef.getFile(localFile)
+            .addOnSuccessListener { taskSnapshot ->
+            }
+            .addOnFailureListener { exception ->
+                // Handle any errors that occurred during the download
+            }
+
         CoroutineScope(Dispatchers.Main).launch {
             val documentSnapshot = db.collection("users")
                 .document(email)

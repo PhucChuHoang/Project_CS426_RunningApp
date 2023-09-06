@@ -1,6 +1,8 @@
 package com.example.project_cs426_runningapp.adapters
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,8 +12,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.example.project_cs426_runningapp.R
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.squareup.picasso.Picasso
-
+import java.io.ByteArrayOutputStream
+import java.io.File
 
 class EventAdapter(private val context: Context, private val dataSource: ArrayList<EventData>,
                    private val profile_specific: Boolean = false) : BaseAdapter() {
@@ -41,8 +46,7 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
 
         if (convertView == null) {
             rowView = inflater.inflate(R.layout.event_list_view, parent, false)
-        }
-        else {
+        } else {
             rowView = convertView
         }
         val event_data = getItem(position) as EventData
@@ -58,15 +62,17 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
         start_date.text = "Start: " + event_data.start_date
         end_date.text = "End: " + event_data.end_date
 
-        if (!event_data.image_name.isNullOrEmpty()) {
-            val p = event_data.image_name?.split("/")?.toTypedArray()
-            val imageLink = "https://drive.google.com/uc?export=download&id=" + (p?.get(5) ?: "")
-            Picasso.with(rowView.context)
-                .load(imageLink)
-                .fit()
-                .centerCrop()
-                .into(thumbnail)
-        }
+//        if (!event_data.image_name.isNullOrEmpty()) {
+//            val p = event_data.image_name?.split("/")?.toTypedArray()
+//            val imageLink = "https://drive.google.com/uc?export=download&id=" + (p?.get(5) ?: "")
+//            Picasso.with(rowView.context)
+//                .load(imageLink)
+//                .fit()
+//                .centerCrop()
+//                .into(thumbnail)
+//        }
+
+        addEventImage(rowView, thumbnail, event_data.image_name)
 
         var emailArray = arrayListOf<String?>()
 
@@ -86,7 +92,7 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
                 }
                 setJoin(emailArray, email, rowView)
             }
-            .addOnFailureListener {exception ->
+            .addOnFailureListener { exception ->
                 Log.w("Error", "Error getting documents: ", exception)
             }
 
@@ -104,8 +110,7 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
                         .document(event_data.event_id)
                         .collection("participants").document(email).set(hashMapOf("status" to 1))
                 }
-            }
-            else {
+            } else {
                 if (profile_specific) {
                     Log.d("Join", "Not anymore")
 
@@ -117,12 +122,51 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
                     if (email != null) {
                         db.collection("events")
                             .document(event_data.event_id)
-                            .collection("participants").document(email).set(hashMapOf("status" to 0))
+                            .collection("participants").document(email)
+                            .set(hashMapOf("status" to 0))
                     }
+                }
+                else {
+                    saveImage(rowView, position)
                 }
             }
         }
         return rowView
+    }
+
+    fun addEventImage(rowView: View, imageView: ImageView, position: String?) {
+        val localFilePath = File(rowView.context.filesDir, position).absolutePath
+        val localFile = File(localFilePath)
+
+        Picasso.with(rowView.context)
+            .load(localFile)
+            .centerCrop()
+            .fit()
+            .into(imageView)
+    }
+
+    private fun saveImage(rowView: View, position: Int) {
+        var thumbnail = rowView.findViewById<ImageView>(R.id.event_thumbnail)
+
+        //Comment out after push to storage
+        val storage = Firebase.storage("gs://cs426-project.appspot.com")
+        var storageRef = storage.reference
+
+        var eventRef = storageRef.child("events/" + "eid" + position + ".jpg")
+
+        var bitmap = getBitmapFromView(thumbnail)
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+
+        var uploadTask = eventRef.putBytes(data)
+        uploadTask.addOnFailureListener {
+            // Handle unsuccessful uploads
+        }.addOnSuccessListener { taskSnapshot ->
+            // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+            // ...
+            Log.d("Image upload to storage", "It's there bro")
+        }
     }
 
      private fun setJoin(emailArray: ArrayList<String?>, email: String?, rowView: View) {
@@ -139,6 +183,14 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
         else {
             can_join = true;
         }
+    }
+    fun getBitmapFromView(view: View): Bitmap {
+        val bitmap = Bitmap.createBitmap(
+            view.width, view.height, Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        view.draw(canvas)
+        return bitmap
     }
 
 }

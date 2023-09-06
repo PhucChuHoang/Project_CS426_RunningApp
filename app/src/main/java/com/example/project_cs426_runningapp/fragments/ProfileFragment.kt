@@ -116,6 +116,7 @@ class ProfileFragment : Fragment() {
                             .whereEqualTo("status", 1)
                             .get()
                             .addOnSuccessListener {documents2 ->
+                                Log.d("Event id profile", "${document.id}")
                                  for (document2 in documents2) {
                                     if (document2.id == email) {
                                         events_array.add(
@@ -145,9 +146,6 @@ class ProfileFragment : Fragment() {
 
         profile_image.setOnClickListener {
             openGallery()
-
-            view.findViewById<TextView>(R.id.save_profile_button).visibility = View.VISIBLE
-            view.findViewById<TextView>(R.id.undo_profile_button).visibility = View.VISIBLE
         }
 
         view.findViewById<TextView>(R.id.save_profile_button).setOnClickListener {
@@ -192,6 +190,9 @@ class ProfileFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val selectedImageUri = result.data?.data
+
+                requireView().findViewById<TextView>(R.id.save_profile_button).visibility = View.VISIBLE
+                requireView().findViewById<TextView>(R.id.undo_profile_button).visibility = View.VISIBLE
 
                 Picasso.with(requireView().context)
                     .load(selectedImageUri)
