@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:background="@color/cold_grey"
     android:orientation="vertical"
-    tools:context=".fragments.ProfileFragment">
+    android:id="@+id/homeView"
+    tools:context=".ProfileFragment">
 
     <RelativeLayout
         android:id="@+id/layout0"
@@ -97,7 +98,7 @@
                 android:layout_toRightOf="@id/weekGoal"
                 android:layout_marginTop="15dp"
                 android:layout_marginLeft="20dp"
-                android:text="50km"
+                android:text="10 km"
                 android:textColor="#FE904B"
                 android:textStyle="bold"
                 android:textSize="18dp"
@@ -118,7 +119,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_marginTop="15dp"
                 android:layout_marginLeft="20dp"
-                android:text="35 km done"
+                android:text="0 km done"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 android:textSize="12dp"
@@ -131,7 +132,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="15dp"
                 android:layout_marginRight="20dp"
-                android:text="15 km left"
+                android:text="10 km left"
                 android:textColor="#cccccc"
                 android:textStyle="bold"
                 android:textSize="12dp"
@@ -146,7 +147,7 @@
                 android:layout_below="@+id/kmLeft"
                 android:progressBackgroundTint="@color/cold_grey"
                 android:progressTint="#FE8D4B"
-                android:progress="70"/>
+                android:progress="0"/>
 
         </RelativeLayout>
     </RelativeLayout>
@@ -270,7 +271,26 @@
         android:textStyle="bold"
         android:textSize="18dp"
         ></TextView>
+    <TextView
+        android:id="@+id/All"
+        android:layout_below="@+id/start_current_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="25dp"
+        android:text="ALL"
+        android:textColor="#FE904B"
+        android:textStyle="bold"
+        android:textSize="18dp"
+        ></TextView>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvRuns"
+        android:layout_width="match_parent"
+        android:layout_height="330dp"
+        android:layout_below="@+id/recentActivity"
+        android:layout_marginTop="45dp"></androidx.recyclerview.widget.RecyclerView>
 
 
 </RelativeLayout>
