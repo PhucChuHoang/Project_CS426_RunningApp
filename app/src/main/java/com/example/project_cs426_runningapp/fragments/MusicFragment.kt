@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.palette.graphics.Palette
@@ -21,6 +22,7 @@ class MusicFragment : Fragment() {
     private val redirectUri = "http://www.cs426.com/redirect"
     private var spotifyAppRemote: SpotifyAppRemote? = null
     private lateinit var binding: FragmentMusicBinding
+    private var volumeSeekBar: SeekBar? = null
 
     override fun onStart() {
         super.onStart()
@@ -86,6 +88,29 @@ class MusicFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Initialize volumeSeekBar
+        volumeSeekBar = view.findViewById(R.id.seekBar)
+        volumeSeekBar?.progress?.let { spotifyAppRemote?.connectApi?.connectSetVolume(it.toFloat()) }
+        // Set a listener to handle volume changes
+        volumeSeekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    // Calculate the volume based on the SeekBar progress
+                    val volume = progress / 100f
+                    // Set the Spotify volume using the SpotifyAppRemote
+                    spotifyAppRemote?.connectApi?.connectSetVolume(volume)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                // No action needed when tracking starts
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                // No action needed when tracking stops
+            }
+        })
+
         val clickListener = View.OnClickListener { view ->
             when (view.id) {
                 R.id.player_back -> {
