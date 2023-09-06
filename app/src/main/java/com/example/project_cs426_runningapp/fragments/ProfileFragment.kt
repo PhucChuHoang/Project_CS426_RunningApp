@@ -157,6 +157,21 @@ class ProfileFragment : Fragment() {
             view.findViewById<TextView>(R.id.undo_profile_button).visibility = View.INVISIBLE
         }
 
+        view.findViewById<TextView>(R.id.undo_profile_button).setOnClickListener {
+            val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
+            val localFile = File(localFilePath)
+
+            Glide.with(this)
+                .load(localFile)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .placeholder(R.drawable.thang_ngot)
+                .into(profile_img)
+
+            view.findViewById<TextView>(R.id.save_profile_button).visibility = View.INVISIBLE
+            view.findViewById<TextView>(R.id.undo_profile_button).visibility = View.INVISIBLE
+        }
+
         val edit_profile_button = view.findViewById<ImageView>(R.id.edit_profile_button)
 
         edit_profile_button.setOnClickListener {
@@ -189,6 +204,40 @@ class ProfileFragment : Fragment() {
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore. Images.Media.EXTERNAL_CONTENT_URI)
         getContentLauncher.launch(intent)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
+        var email = sharedPreferences.getString("email", null)
+
+        val storageReference = Firebase.storage("gs://cs426-project.appspot.com").reference
+
+        var profileRef = storageReference.child("images/" + email + "_profile.jpg")
+
+        val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
+
+        // Create parent directories if they don't exist
+        val parentDir = File(localFilePath).parentFile
+        if (!parentDir.exists()) {
+            parentDir.mkdirs()
+        }
+
+        val localFile = File(localFilePath)
+
+        if (localFile.exists()) {
+            // If it exists, delete it
+            localFile.delete()
+        }
+
+        profileRef.getFile(localFile)
+            .addOnSuccessListener { taskSnapshot ->
+                Log.d("On stop email", email.toString())
+            }
+            .addOnFailureListener { exception ->
+                // Handle any errors that occurred during the download
+            }
     }
 
     private fun saveProfilePic() {

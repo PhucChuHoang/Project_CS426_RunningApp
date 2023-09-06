@@ -69,23 +69,27 @@
 
                 <TextView
                     android:id="@+id/save_profile_button"
-                    android:layout_marginHorizontal="30dp"
-                    android:layout_width="wrap_content"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:textSize="15dp"
+                    android:textAlignment="center"
                     android:background="@drawable/round_outline_1"
+                    android:backgroundTint="@color/light_green"
                     android:visibility="invisible"
                     android:text="Save">
                 </TextView>
 
                 <TextView
                     android:id="@+id/undo_profile_button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:textSize="15dp"
+                    android:textAlignment="center"
                     android:background="@drawable/round_outline_1"
+                    android:backgroundTint="@color/red"
                     android:visibility="invisible"
                     android:text="Undo">
                 </TextView>

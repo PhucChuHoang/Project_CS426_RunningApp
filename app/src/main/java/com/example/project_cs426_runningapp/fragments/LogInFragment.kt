@@ -33,7 +33,6 @@ class LogInFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        super.onViewCreated(view, savedInstanceState)
         binding.loginScreenLoginButton.setOnClickListener { handleLogin() }
         binding.loginScreenReturnButton.setOnClickListener {
             findNavController().popBackStack()
