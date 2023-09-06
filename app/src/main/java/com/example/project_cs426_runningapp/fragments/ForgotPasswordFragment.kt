@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.example.project_cs426_runningapp.databinding.FragmentForgotPasswordBinding
-import com.facebook.login.Login
 import com.google.firebase.auth.FirebaseAuth
 
 class ForgotPasswordFragment : Fragment() {
@@ -38,12 +37,7 @@ class ForgotPasswordFragment : Fragment() {
                     }
                     auth.sendPasswordResetEmail(binding.resetEmailEditText.text.toString())
                         .addOnCompleteListener { task ->
-                            val view = requireActivity().currentFocus
-                            if (view != null) {
-                                val imm =
-                                    requireActivity().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
-                                imm.hideSoftInputFromWindow(view.windowToken, 0)
-                            }
+                            hideKeyboard()
                             if (task.isSuccessful) {
                                 createDialog("Reset password successfully!!!", "Please check your email.")
                             } else {
@@ -67,5 +61,14 @@ class ForgotPasswordFragment : Fragment() {
                 }
             }
         alertDialogBuilder.show()
+    }
+
+    private fun hideKeyboard() {
+        val view = requireActivity().currentFocus
+        if (view != null) {
+            val imm =
+                requireActivity().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
     }
 }
