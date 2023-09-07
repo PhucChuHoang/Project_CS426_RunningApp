@@ -1,5 +1,7 @@
 package com.example.project_cs426_runningapp.fragments
 
+import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -16,10 +18,10 @@ import com.example.project_cs426_runningapp.databinding.FragmentMusicBinding
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
+import com.example.project_cs426_runningapp.other.Constants.SPOTIFY_CLIENT_ID as clientID
+import com.example.project_cs426_runningapp.other.Constants.SPOTIFY_REDIRECT_URI as redirectUri
 
 class MusicFragment : Fragment() {
-    private val clientID = "12b274aab0934f67942cba17bd6770c7"
-    private val redirectUri = "http://www.cs426.com/redirect"
     private var spotifyAppRemote: SpotifyAppRemote? = null
     private lateinit var binding: FragmentMusicBinding
     private var volumeSeekBar: SeekBar? = null
@@ -30,17 +32,11 @@ class MusicFragment : Fragment() {
             .setRedirectUri(redirectUri)
             .showAuthView(true)
             .build()
-        SpotifyAppRemote.connect(requireContext(), connectionParams, object : Connector.ConnectionListener {
-            override fun onConnected(appRemote: SpotifyAppRemote?) {
-                spotifyAppRemote = appRemote
-                Log.d("MusicFragment", "Connected! Yay!")
-                subscribeToPlayerState()
-            }
-
-            override fun onFailure(p0: Throwable?) {
-                TODO("Not yet implemented")
-            }
-        })
+        if (isSpotifyInstalled(requireContext())) {
+            SpotifyAppRemote.connect(requireContext(), connectionParams, connectionListener)
+        } else {
+            handleSpotifyNotInstalled()
+        }
     }
 
     override fun onCreateView(
@@ -49,6 +45,42 @@ class MusicFragment : Fragment() {
     ): View {
         binding = FragmentMusicBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    private fun isSpotifyInstalled(context: Context): Boolean {
+        val spotifyPackageName = "com.spotify.music"
+        try {
+            context.packageManager.getPackageInfo(spotifyPackageName, 0)
+        } catch (e: PackageManager.NameNotFoundException) {
+            return false
+        }
+        return true
+    }
+
+    private val connectionListener = object : Connector.ConnectionListener {
+        override fun onConnected(appRemote: SpotifyAppRemote?) {
+            spotifyAppRemote = appRemote
+            Log.d("MusicFragment", "Connected! Yay!")
+            subscribeToPlayerState()
+        }
+
+        override fun onFailure(p0: Throwable?) {
+            // Handle connection failure
+            Log.e("MusicFragment", "Spotify connection failed", p0)
+        }
+    }
+
+    private fun handleSpotifyNotInstalled() {
+        Log.d("MusicFragment", "Spotify not installed")
+        binding.spotifyNotInstalledTextView.visibility = View.VISIBLE
+        binding.playerSkip.visibility = View.GONE
+        binding.playerBack.visibility = View.GONE
+        binding.controlCircle.visibility = View.GONE
+        binding.trackNameTextView.visibility = View.GONE
+        binding.artistNameTextView.visibility = View.GONE
+        binding.albumCoverImageView.visibility = View.GONE
+        binding.seekBar.visibility = View.GONE
+        binding.playerPause.visibility = View.GONE
     }
 
     private fun subscribeToPlayerState() {
