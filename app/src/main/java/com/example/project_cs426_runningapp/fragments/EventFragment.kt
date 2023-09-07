@@ -69,6 +69,11 @@ class EventFragment : Fragment() {
 //            db.collection("events").document("eid000")
 //                .set(event0)
 //
+//            db.collection("events")
+//                .document("eid000")
+//                .collection("participants")
+//                .document("nmvinhdl1215@gmail.com").set(hashMapOf("status" to 0))
+//
 //            val event1 = hashMapOf(
 //                "event_name" to "Nike 2nd Open Cup",
 //                "image_url" to "event_image_1.jpg",
@@ -78,10 +83,7 @@ class EventFragment : Fragment() {
 //                "event_id" to "eid001"
 //            )
 //
-//            db.collection("events")
-//                .document("eid000")
-//                .collection("participants")
-//                .document("nmvinhdl1215@gmail.com").set(hashMapOf("status" to 0))
+
 //
 //            db.collection("events").document("eid001")
 //                .set(event1)
@@ -142,7 +144,7 @@ class EventFragment : Fragment() {
 //                .collection("participants")
 //                .document("nmvinhdl1215@gmail.com").set(hashMapOf("status" to 0))
 
-//            for (i in 0..2) {
+//            for (i in 0..0) {
 //                db.collection("events").document("eid00" + i)
 //                    .delete()
 //            }
@@ -217,6 +219,10 @@ class EventFragment : Fragment() {
     }
 
     private fun setUpEventImage(array_size: Int) {
+        val sharedPreferences = requireActivity().getSharedPreferences("total_event", 0)
+        val editor = sharedPreferences.edit()
+        editor.putString("total", array_size.toString())
+        editor.apply()
         CoroutineScope(Dispatchers.Main).launch {
             val storageReference = Firebase.storage("gs://cs426-project.appspot.com").reference
 
