@@ -110,14 +110,20 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                             if (bmp != null) runArray.add(run)
                             runArray.sortByDescending { it.ID }
                             var sumM : Long
+                            var sumKcal : Long
+                            var sumHr : Long
                             var kmleft = binding.kmLeft
                             var kmDone = binding.kmDone
                             var progresss = binding.progress
                             var level = binding.level
                             sumM = 0
+                            sumKcal = 0
+                            sumHr = 0
                             for (run in runArray)
                             {
                                 sumM += run.distanceInMeters
+                                sumKcal += run.caloriesBurned
+                                sumHr += run.timeInMillis
                             }
                             var sumKM : Int
                             sumKM = (sumM/1000f).toInt()
@@ -150,6 +156,9 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                             val UserID = runArray[0].ID
                             with(sharedPrefID.edit()) {
                                 putLong("UserID", UserID)
+                                putLong("sumM", sumM)
+                                putLong("sumKcal", sumKcal)
+                                putLong("sumHr", sumHr)
                                 apply()
                             }
                             Log.d("UserIDInHome","$UserID")
@@ -173,14 +182,20 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
                                 runArray.sortByDescending { it.ID }
                                 var sumM : Long
+                                var sumKcal : Long
+                                var sumHr : Long
                                 var kmleft = binding.kmLeft
                                 var kmDone = binding.kmDone
                                 var progresss = binding.progress
                                 var level = binding.level
                                 sumM = 0
+                                sumKcal = 0
+                                sumHr = 0
                                 for (run in runArray)
                                 {
                                     sumM += run.distanceInMeters
+                                    sumKcal += run.caloriesBurned
+                                    sumHr += run.timeInMillis
                                 }
                                 var sumKM : Int
                                 sumKM = (sumM/1000f).toInt()
@@ -211,6 +226,9 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                                 val UserID = runArray[0].ID
                                 with(sharedPrefID.edit()) {
                                     putLong("UserID", UserID)
+                                    putLong("sumM", sumM)
+                                    putLong("sumKcal", sumKcal)
+                                    putLong("sumHr", sumHr)
                                     apply()
                                 }
                                 Log.d("UserIDInHome","$UserID")

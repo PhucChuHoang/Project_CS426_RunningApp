@@ -36,6 +36,8 @@ import com.example.project_cs426_runningapp.adapters.EventAdapter
 import com.example.project_cs426_runningapp.adapters.EventData
 import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.ViewModel.HomeViewModel
+import com.example.project_cs426_runningapp.other.TrackingUtility
+import java.util.concurrent.TimeUnit
 
 class ProfileFragment : Fragment() {
     private var name: String? = null
@@ -93,6 +95,7 @@ class ProfileFragment : Fragment() {
         if(HomeViewModel.get().isNotBlank())
             user_name.text = "${HomeViewModel.get()}"
         else user_name.text = name
+        setUpUserRunInfo(view)
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val events = db.collection("events")
@@ -287,5 +290,21 @@ class ProfileFragment : Fragment() {
         val adapter = EventAdapter(curView.context, events_array, true)
 
         listView.adapter = adapter
+    }
+    private fun setUpUserRunInfo(view: View)
+    {
+        val sharedPrefID = requireActivity().getSharedPreferences("sharedPrefID", 0)
+        var sumM = sharedPrefID.getLong("sumM", 0)
+        var sumCaloriesBurned = sharedPrefID.getLong("sumKcal", 0)
+        var sumTimeInMillis = sharedPrefID.getLong("sumHr", 0)
+
+        val sumKM = view.findViewById<TextView>(R.id.sumKM)
+        val sumHr = view.findViewById<TextView>(R.id.sumHr)
+        val sumKcal = view.findViewById<TextView>(R.id.sumKcal)
+
+        sumKM.text = "${sumM / 1000f}"
+        sumKcal.text = "$sumCaloriesBurned"
+        val hours = TimeUnit.MILLISECONDS.toHours(sumTimeInMillis)
+        sumHr.text = "$hours"
     }
 }
