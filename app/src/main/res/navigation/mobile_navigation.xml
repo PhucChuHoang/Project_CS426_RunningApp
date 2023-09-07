@@ -111,7 +111,11 @@
         android:id="@+id/editProfileFragment"
         android:name="com.example.project_cs426_runningapp.fragments.EditProfileFragment"
         android:label="fragment_edit_profile"
-        tools:layout="@layout/fragment_edit_profile" />
+        tools:layout="@layout/fragment_edit_profile" >
+        <action
+            android:id="@+id/action_editProfileFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settingFragment"
         android:name="com.example.project_cs426_runningapp.fragments.SettingFragment"
