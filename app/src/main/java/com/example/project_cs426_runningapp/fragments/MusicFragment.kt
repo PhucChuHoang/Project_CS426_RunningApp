@@ -28,15 +28,16 @@ class MusicFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        val connectionParams = ConnectionParams.Builder(clientID)
-            .setRedirectUri(redirectUri)
-            .showAuthView(true)
-            .build()
         if (isSpotifyInstalled(requireContext())) {
-            SpotifyAppRemote.connect(requireContext(), connectionParams, connectionListener)
+            val connectionParams = ConnectionParams.Builder(clientID)
+                .setRedirectUri(redirectUri)
+                .showAuthView(true)
+                .build()
+            SpotifyAppRemote.connect(context, connectionParams, connectionListener)
         } else {
             handleSpotifyNotInstalled()
         }
+
     }
 
     override fun onCreateView(
@@ -60,13 +61,11 @@ class MusicFragment : Fragment() {
     private val connectionListener = object : Connector.ConnectionListener {
         override fun onConnected(appRemote: SpotifyAppRemote?) {
             spotifyAppRemote = appRemote
-            Log.d("MusicFragment", "Connected! Yay!")
             subscribeToPlayerState()
         }
 
         override fun onFailure(p0: Throwable?) {
-            // Handle connection failure
-            Log.e("MusicFragment", "Spotify connection failed", p0)
+            handleSpotifyNotInstalled()
         }
     }
 
@@ -210,12 +209,11 @@ class MusicFragment : Fragment() {
     private fun calculateMiddleColor(luminance: Double): Int {
         // Calculate the middle color based on luminance
         val middleLuminance = if (luminance > 0.5) 0.2 else 0.8
-        val interpolatedColor = ColorUtils.blendARGB(
+        return ColorUtils.blendARGB(
             Color.BLACK,
             Color.WHITE,
             middleLuminance.toFloat()
         )
-        return interpolatedColor
     }
     private fun getContrastColor(dominantColor: Int): Int {
         // Calculate the luminance of the dominant color
