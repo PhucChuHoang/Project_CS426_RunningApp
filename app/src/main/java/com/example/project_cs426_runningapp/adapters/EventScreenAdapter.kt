@@ -25,7 +25,7 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
 
     private lateinit var db: FirebaseFirestore
 
-    private var can_join = false
+    private var check_first_list = false
 
     override fun getCount(): Int {
         return dataSource.size
@@ -40,7 +40,7 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        can_join = true
+        check_first_list = false
 
         val rowView: View
 
@@ -90,14 +90,13 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
                 for (document in documents) {
                     emailArray.add("${document.id}")
                 }
-                setJoin(emailArray, email, rowView)
+                setJoin(emailArray, email, rowView, position)
             }
             .addOnFailureListener { exception ->
                 Log.w("Error", "Error getting documents: ", exception)
             }
 
         join_button.setOnClickListener {
-            Log.d("Can Join?", can_join.toString())
             if (join_button.text.toString() == "Join challenge") {
                 Log.d("Email", email.toString())
 
@@ -126,11 +125,9 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
                             .set(hashMapOf("status" to 0))
                     }
                 }
-                else {
-                    saveImage(rowView, position)
-                }
             }
         }
+
         return rowView
     }
 
@@ -169,19 +166,21 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
         }
     }
 
-     private fun setJoin(emailArray: ArrayList<String?>, email: String?, rowView: View) {
+     private fun setJoin(emailArray: ArrayList<String?>, email: String?, rowView: View, position: Int = 10) {
         var join_button = rowView.findViewById(R.id.join_challenge_button) as TextView
 
-        if (emailArray.indexOf(email) != -1) {
+        if (emailArray.isNotEmpty() && emailArray.indexOf(email) != -1) {
+            Log.d("How tf are you here?", position.toString())
             join_button.text = "Joined"
             if (profile_specific) {
                 join_button.text = "Withdraw"
             }
             join_button.setBackgroundResource(R.drawable.round_outline_gray)
-            can_join = false;
         }
         else {
-            can_join = true;
+            Log.d("Empty here " + position, "true")
+            join_button.text = "Join challenge"
+            join_button.setBackgroundResource(R.drawable.round_outline)
         }
     }
     fun getBitmapFromView(view: View): Bitmap {
