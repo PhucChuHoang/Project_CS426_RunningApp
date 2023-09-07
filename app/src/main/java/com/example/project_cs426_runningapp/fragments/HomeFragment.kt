@@ -34,6 +34,7 @@ import kotlinx.coroutines.tasks.await
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import com.example.project_cs426_runningapp.ViewModel.HomeViewModel
+import java.io.ByteArrayOutputStream
 
 class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var binding: FragmentHomeBinding
@@ -90,6 +91,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
                         val ID = document.data?.get("ID") as Long
+                        Log.d("IDget", "$ID")
                         var timestamp = document.data?.get("timestamp") as Long
                         var avgSpeedInKMH = document.data?.get("avgSpeedInKMH") as Double
                         var distanceInMeters = document.data?.get("distanceInMeters") as Long
@@ -97,19 +99,15 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                         var caloriesBurned = document.data?.get("caloriesBurned") as Long
                         var emailInDoc = document.data?.get("email") as String
 
-                        val storage = Firebase.storage("gs://cs426-project.appspot.com")
-                        var storageRef = storage.reference
-                        var runImageRef = storageRef.child("runs/" + emailInDoc + "_" + "$ID" + ".PNG")
-                        var tmpID = ID.toInt()
-                        if (emailInDoc == "quoclexx@gmail.com" && (tmpID == 1 || tmpID == 2 || tmpID == 3 || tmpID == 4 || tmpID == 5)) continue
-                        if (timestamp == null || ID == null) continue
-                        val ONE_MEGABYTE: Long = 1024 * 1024 * 5
+                        val sharedPref = requireActivity().getSharedPreferences("sharedPrefQ", 0)
+                        val encodedImage = sharedPref.getString("encodedImage$ID", "DEFAULT")
+                        if (encodedImage != "DEFAULT") {
+                            val imageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
+                            val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
 
-                        runImageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener { byteArr ->
-                            var bmp = toBitmap(byteArr)
+                            var bmp = decodedImage
                             var run = Run(ID,bmp,timestamp,avgSpeedInKMH,distanceInMeters,timeInMillis,caloriesBurned,emailInDoc)
                             if (bmp != null) runArray.add(run)
-
                             runArray.sortByDescending { it.ID }
                             var sumM : Long
                             var kmleft = binding.kmLeft
@@ -145,25 +143,34 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                                 level.text = "Specialist"
                             }
                             else level.text = "Expert"
-                            Log.d("AdapterOnSuccess", "encodeed is not null, Start Adapter!")
+                            Log.d("AdapterOnfail", "encodeed is not null, Start Adapter!")
                             val runAdapter = RunAdapter(runArray)
+
+                            val sharedPrefID = requireActivity().getSharedPreferences("sharedPrefID", 0)
+                            val UserID = runArray[0].ID
+                            with(sharedPrefID.edit()) {
+                                putLong("UserID", UserID)
+                                apply()
+                            }
+                            Log.d("UserIDInHome","$UserID")
                             val recyclerView: RecyclerView = binding.rvRuns
                             var layoutManager = LinearLayoutManager(requireContext())
                             recyclerView.layoutManager = layoutManager
                             recyclerView.adapter = runAdapter
-                            // Data for "images/island.jpg" is returned, use this as needed
                         }
-
-                            .addOnFailureListener {
-                            val sharedPref = requireActivity().getSharedPreferences("sharedPrefQ", 0)
-                            val encodedImage = sharedPref.getString("encodedImage", "DEFAULT")
-                            if (encodedImage != "DEFAULT") {
-                                val imageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
-                                val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-
-                                var bmp = decodedImage
+                        else {
+                            val storage = Firebase.storage("gs://cs426-project.appspot.com")
+                            var storageRef = storage.reference
+                            var runImageRef = storageRef.child("runs/" + emailInDoc + "_" + "$ID" + ".PNG")
+                            var tmpID = ID.toInt()
+                            if (emailInDoc == "quoclexx@gmail.com" && (tmpID == 1 || tmpID == 2 || tmpID == 3 || tmpID == 4 || tmpID == 5)) continue
+                            if (timestamp == null || ID == null) continue
+                            val ONE_MEGABYTE: Long = 1024 * 1024 * 5
+                            runImageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener { byteArr ->
+                                var bmp = toBitmap(byteArr)
                                 var run = Run(ID,bmp,timestamp,avgSpeedInKMH,distanceInMeters,timeInMillis,caloriesBurned,emailInDoc)
                                 if (bmp != null) runArray.add(run)
+
                                 runArray.sortByDescending { it.ID }
                                 var sumM : Long
                                 var kmleft = binding.kmLeft
@@ -199,17 +206,26 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                                     level.text = "Specialist"
                                 }
                                 else level.text = "Expert"
-                                Log.d("AdapterOnfail", "encodeed is not null, Start Adapter!")
+                                Log.d("AdapterOnSuccess", "encodeed is not null, Start Adapter!")
+                                val sharedPrefID = requireActivity().getSharedPreferences("sharedPrefID", 0)
+                                val UserID = runArray[0].ID
+                                with(sharedPrefID.edit()) {
+                                    putLong("UserID", UserID)
+                                    apply()
+                                }
+                                Log.d("UserIDInHome","$UserID")
                                 val runAdapter = RunAdapter(runArray)
                                 val recyclerView: RecyclerView = binding.rvRuns
                                 var layoutManager = LinearLayoutManager(requireContext())
                                 recyclerView.layoutManager = layoutManager
                                 recyclerView.adapter = runAdapter
+                                // Data for "images/island.jpg" is returned, use this as needed
                             }
-                                else Log.d("encodedImage", "encodeed is null")
 
+                                .addOnFailureListener {
+
+                                }
                         }
-
                     }
                     }
 
@@ -218,8 +234,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 }
 
     }
-
-
 
     private fun toBitmap(bytes: ByteArray): Bitmap {
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
