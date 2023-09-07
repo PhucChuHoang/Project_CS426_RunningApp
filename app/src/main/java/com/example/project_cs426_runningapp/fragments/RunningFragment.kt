@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentRunningBinding
@@ -122,10 +121,10 @@ class RunningFragment : Fragment() {
 
     private fun updateTracking(isTracking: Boolean) {
         this.isTracking = isTracking
-        if(!isTracking) {
+        if(!isTracking && curTimeInMillis > 0L) {
             binding.btnToggleRun.setImageResource(R.drawable.start_button)
             binding.btnFinishRun.visibility = View.VISIBLE
-        } else {
+        } else if (isTracking) {
             binding.btnToggleRun.setImageResource(R.drawable.pause_button)
             binding.btnFinishRun.visibility = View.GONE
         }
@@ -160,14 +159,6 @@ class RunningFragment : Fragment() {
         )
     }
 
-
-
-    private fun fromBitmap(bmp: Bitmap): String {
-        val outputStream = ByteArrayOutputStream()
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        return String(outputStream.toByteArray())
-    }
-
     private fun endRunAndSaveToDb() {
         map?.snapshot { bmp ->
             var distanceInMeters : Long
@@ -180,47 +171,26 @@ class RunningFragment : Fragment() {
             val caloriesBurned = ((distanceInMeters / 1000f) * weight).toLong()
             var email: String? = null
             val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
-
-
+            email = sharedPreferences.getString("email", null)
+            val sharedPrefID = requireActivity().getSharedPreferences("sharedPrefID", 0)
+            var count = sharedPrefID.getLong("UserID", 0)
+            count++
+            Log.d("UserIDInRun","$count")
+            val run = Run(count,bmp, dateTimestamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned,email)
+            run.saveRun()
             val sharedPref = requireActivity().getSharedPreferences("sharedPrefQ", 0)
             val baos = ByteArrayOutputStream()
             val bitmap = bmp
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
             val encodedImage = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT)
             with(sharedPref.edit()) {
-                putString("encodedImage", encodedImage)
-                apply()
-            }
-
-            email = sharedPreferences.getString("email", null)
-            var db = FirebaseFirestore.getInstance()
-            var count : Long
-            count  = 1
-            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                try {
-                    var aRun = db.collection("aRun")
-                        .whereEqualTo("email", email)
-                        .get()
-                        .await()
-
-                    val totalEvent = aRun.size()
-                    count = (totalEvent+1).toLong()
-                    val run = Run(count,bmp, dateTimestamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned,email)
-                    Log.d("countRun", count.toString())
-                    run.saveRun()
-                    Snackbar.make(
-                        requireActivity().findViewById(android.R.id.content),
-                        "Run saved successfully",
-                        Snackbar.LENGTH_LONG
-                    ).show()
-                    stopRun()
-                    // Check if there are documents and update the UI
-                } catch (e: Exception) {
-                    // Handle any exceptions that may occur during the Firestore operation
-                    e.printStackTrace()
-                }
-            }
-
+                putString("encodedImage$count", encodedImage)
+                apply() }
+            Snackbar.make(
+                requireActivity().findViewById(android.R.id.content),
+                "Run saved successfully",
+                Snackbar.LENGTH_LONG).show()
+            stopRun()
         }
     }
 
