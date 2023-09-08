@@ -12,27 +12,34 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginBottom="40dp"
+        android:background="@drawable/orange_gradient_topbar"
         android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/ProfileEditBack"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/return_button" />
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Edit Profile"
-            android:textSize="25sp"
-            android:textStyle="bold" />
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="40dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ProfileEditBack"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/return_button" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Edit Profile"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+        </LinearLayout>
     </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -47,6 +54,7 @@
             android:id="@+id/FullNameInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:inputType="textPersonName"/>
