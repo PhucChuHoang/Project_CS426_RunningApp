@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.project_cs426_runningapp.R
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -25,8 +26,6 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
 
     private lateinit var db: FirebaseFirestore
 
-    private var check_first_list = false
-
     override fun getCount(): Int {
         return dataSource.size
     }
@@ -40,15 +39,8 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        check_first_list = false
+        val rowView: View = convertView ?: inflater.inflate(R.layout.event_list_view, parent, false)
 
-        val rowView: View
-
-        if (convertView == null) {
-            rowView = inflater.inflate(R.layout.event_list_view, parent, false)
-        } else {
-            rowView = convertView
-        }
         val event_data = getItem(position) as EventData
 
         val event_title = rowView.findViewById<TextView>(R.id.text_event_name)
@@ -61,16 +53,6 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
         event_title.text = event_data.event_name
         start_date.text = "Start: " + event_data.start_date
         end_date.text = "End: " + event_data.end_date
-
-//        if (!event_data.image_name.isNullOrEmpty()) {
-//            val p = event_data.image_name?.split("/")?.toTypedArray()
-//            val imageLink = "https://drive.google.com/uc?export=download&id=" + (p?.get(5) ?: "")
-//            Picasso.with(rowView.context)
-//                .load(imageLink)
-//                .fit()
-//                .centerCrop()
-//                .into(thumbnail)
-//        }
 
         addEventImage(rowView, thumbnail, event_data.image_name)
 
