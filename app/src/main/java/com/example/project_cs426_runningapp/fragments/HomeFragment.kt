@@ -17,6 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentHomeBinding
 import com.google.firebase.firestore.FirebaseFirestore
@@ -34,7 +35,9 @@ import kotlinx.coroutines.tasks.await
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import com.example.project_cs426_runningapp.ViewModel.HomeViewModel
+import de.hdodenhof.circleimageview.CircleImageView
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var binding: FragmentHomeBinding
@@ -65,6 +68,8 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         if(HomeViewModel.get().isNotBlank())
             binding.fullName.text = "Hello, ${HomeViewModel.get()}"
         else binding.fullName.text = "Hello, $name"
+
+        setProfileImage()
         val clickListener = View.OnClickListener { v ->
             when (v) {
                 binding.startCurrentLayout -> {
@@ -251,6 +256,19 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     Log.w("TAG", "Error getting documents: ", exception)
                 }
 
+    }
+
+    private fun setProfileImage() {
+        val profile_img = binding.profileImage
+        val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
+        val localFile = File(localFilePath)
+
+        Glide.with(this)
+            .load(localFile)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .placeholder(R.drawable.thang_ngot)
+            .into(profile_img)
     }
 
     private fun toBitmap(bytes: ByteArray): Bitmap {

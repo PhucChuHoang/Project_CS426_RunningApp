@@ -325,7 +325,7 @@ class EditProfileFragment : Fragment() {
             Toast.makeText(requireContext(), "Item: $itemSelected", Toast.LENGTH_SHORT).show()
         })
         binding.ProfileEditBack.setOnClickListener {
-            findNavController().navigate(R.id.action_editProfileFragment_to_homeFragment)
+            findNavController().popBackStack()
         }
         binding.SubmitBtn.setOnClickListener {
             val fullname = binding.FullNameInput.text.toString()
