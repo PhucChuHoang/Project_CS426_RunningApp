@@ -160,7 +160,7 @@ class EventFragment : Fragment() {
         val clickListener = View.OnClickListener { v ->
             when (v) {
                 binding.eventEditButton -> {
-                    findNavController().navigate(R.id.action_dontKnowFragment_to_addEventFragment2)
+                    findNavController().navigate(R.id.action_eventFragment_to_addEventFragment2)
                 }
             }
         }

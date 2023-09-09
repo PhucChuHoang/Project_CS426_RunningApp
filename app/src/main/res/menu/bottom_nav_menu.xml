@@ -13,9 +13,9 @@
         android:title="@string/music" />
 
     <item
-        android:id="@+id/dontKnowFragment"
+        android:id="@+id/eventFragment"
         android:icon="@drawable/icon_flag"
-        android:title="@string/dontknow" />
+        android:title="Event" />
 
     <item
         android:id="@+id/profileFragment"
