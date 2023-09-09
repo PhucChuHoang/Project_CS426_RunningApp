@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.project_cs426_runningapp.R
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -25,8 +26,6 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
 
     private lateinit var db: FirebaseFirestore
 
-    private var can_join = false
-
     override fun getCount(): Int {
         return dataSource.size
     }
@@ -40,15 +39,8 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        can_join = true
+        val rowView: View = convertView ?: inflater.inflate(R.layout.event_list_view, parent, false)
 
-        val rowView: View
-
-        if (convertView == null) {
-            rowView = inflater.inflate(R.layout.event_list_view, parent, false)
-        } else {
-            rowView = convertView
-        }
         val event_data = getItem(position) as EventData
 
         val event_title = rowView.findViewById<TextView>(R.id.text_event_name)
@@ -61,16 +53,6 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
         event_title.text = event_data.event_name
         start_date.text = "Start: " + event_data.start_date
         end_date.text = "End: " + event_data.end_date
-
-//        if (!event_data.image_name.isNullOrEmpty()) {
-//            val p = event_data.image_name?.split("/")?.toTypedArray()
-//            val imageLink = "https://drive.google.com/uc?export=download&id=" + (p?.get(5) ?: "")
-//            Picasso.with(rowView.context)
-//                .load(imageLink)
-//                .fit()
-//                .centerCrop()
-//                .into(thumbnail)
-//        }
 
         addEventImage(rowView, thumbnail, event_data.image_name)
 
@@ -90,14 +72,13 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
                 for (document in documents) {
                     emailArray.add("${document.id}")
                 }
-                setJoin(emailArray, email, rowView)
+                setJoin(emailArray, email, rowView, position)
             }
             .addOnFailureListener { exception ->
                 Log.w("Error", "Error getting documents: ", exception)
             }
 
         join_button.setOnClickListener {
-            Log.d("Can Join?", can_join.toString())
             if (join_button.text.toString() == "Join challenge") {
                 Log.d("Email", email.toString())
 
@@ -126,11 +107,9 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
                             .set(hashMapOf("status" to 0))
                     }
                 }
-                else {
-                    saveImage(rowView, position)
-                }
             }
         }
+
         return rowView
     }
 
@@ -169,19 +148,21 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
         }
     }
 
-     private fun setJoin(emailArray: ArrayList<String?>, email: String?, rowView: View) {
+     private fun setJoin(emailArray: ArrayList<String?>, email: String?, rowView: View, position: Int = 10) {
         var join_button = rowView.findViewById(R.id.join_challenge_button) as TextView
 
-        if (emailArray.indexOf(email) != -1) {
+        if (emailArray.isNotEmpty() && emailArray.indexOf(email) != -1) {
+            Log.d("How tf are you here?", position.toString())
             join_button.text = "Joined"
             if (profile_specific) {
                 join_button.text = "Withdraw"
             }
             join_button.setBackgroundResource(R.drawable.round_outline_gray)
-            can_join = false;
         }
         else {
-            can_join = true;
+            Log.d("Empty here " + position, "true")
+            join_button.text = "Join challenge"
+            join_button.setBackgroundResource(R.drawable.round_outline)
         }
     }
     fun getBitmapFromView(view: View): Bitmap {

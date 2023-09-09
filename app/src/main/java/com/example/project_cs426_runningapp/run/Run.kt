@@ -2,9 +2,7 @@ package com.example.project_cs426_runningapp.run
 
 import android.graphics.Bitmap
 import android.util.Log
-import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
@@ -53,7 +51,7 @@ class Run(
         }.addOnSuccessListener { taskSnapshot ->
             // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
             // ...
-            Log.d("Image run upload", "It's up bro")
+            Log.d("Image run upload", "It's up bro $ID")
         }
     }
     fun fromBitmap(bmp: Bitmap): ByteArray {

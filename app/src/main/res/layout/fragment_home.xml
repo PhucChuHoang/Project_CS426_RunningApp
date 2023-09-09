@@ -32,7 +32,7 @@
             android:background="@drawable/icon_gear"
             >
         </ImageView>
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_image"
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -42,7 +42,7 @@
             android:layout_marginLeft="20dp"
             android:src="@drawable/profile"
             >
-        </ImageView>
+        </de.hdodenhof.circleimageview.CircleImageView>
         <TextView
             android:id="@+id/fullName"
             android:layout_width="wrap_content"

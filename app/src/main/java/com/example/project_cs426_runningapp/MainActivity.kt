@@ -12,7 +12,9 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.project_cs426_runningapp.databinding.ActivityOnboardingBinding
 import com.example.project_cs426_runningapp.other.Constants.ACTION_SHOW_TRACKING_FRAGMENT
 import com.google.firebase.auth.FirebaseAuth
-
+import dagger.hilt.android.AndroidEntryPoint
+import org.checkerframework.checker.units.qual.s
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityOnboardingBinding
     private lateinit var auth: FirebaseAuth

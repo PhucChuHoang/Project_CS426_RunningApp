@@ -53,19 +53,26 @@
         android:id="@+id/profileFragment"
         android:name="com.example.project_cs426_runningapp.fragments.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_settingFragment"
+            app:destination="@id/settingFragment" />
+    </fragment>
     <fragment
         android:id="@+id/musicFragment"
         android:name="com.example.project_cs426_runningapp.fragments.MusicFragment"
         android:label="fragment_music"
         tools:layout="@layout/fragment_music" />
     <fragment
-        android:id="@+id/dontKnowFragment"
+        android:id="@+id/eventFragment"
         android:name="com.example.project_cs426_runningapp.fragments.EventFragment"
-        android:label="fragment_dont_know"
-        tools:layout="@layout/fragment_event" >
+        android:label="eventFragment"
+        tools:layout="@layout/fragment_event">
         <action
-            android:id="@+id/action_dontKnowFragment_to_addEventFragment2"
+            android:id="@+id/action_eventFragment_to_addEventFragment2"
             app:destination="@id/addEventFragment2" />
     </fragment>
     <fragment
@@ -83,8 +90,8 @@
             android:id="@+id/action_logInFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
         <action
-            android:id="@+id/action_logInFragment_to_dontKnowFragment"
-            app:destination="@id/dontKnowFragment" />
+            android:id="@+id/action_logInFragment_to_eventFragment"
+            app:destination="@id/eventFragment" />
         <action
             android:id="@+id/action_logInFragment_to_forgotPasswordFragment"
             app:destination="@id/forgotPasswordFragment" />
@@ -104,14 +111,18 @@
             android:id="@+id/action_registerFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
         <action
-            android:id="@+id/action_registerFragment_to_dontKnowFragment"
-            app:destination="@id/dontKnowFragment" />
+            android:id="@+id/action_registerFragment_to_eventFragment"
+            app:destination="@id/eventFragment" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.example.project_cs426_runningapp.fragments.EditProfileFragment"
         android:label="fragment_edit_profile"
-        tools:layout="@layout/fragment_edit_profile" />
+        tools:layout="@layout/fragment_edit_profile" >
+        <action
+            android:id="@+id/action_editProfileFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settingFragment"
         android:name="com.example.project_cs426_runningapp.fragments.SettingFragment"

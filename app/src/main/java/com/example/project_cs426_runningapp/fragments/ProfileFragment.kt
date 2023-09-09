@@ -32,12 +32,18 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.project_cs426_runningapp.adapters.EventAdapter
 import com.example.project_cs426_runningapp.adapters.EventData
 import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.ViewModel.HomeViewModel
+import com.example.project_cs426_runningapp.databinding.FragmentEventBinding
+import com.example.project_cs426_runningapp.databinding.FragmentProfileBinding
+import com.example.project_cs426_runningapp.other.TrackingUtility
+import java.util.concurrent.TimeUnit
 
 class ProfileFragment : Fragment() {
+    private lateinit var binding: FragmentProfileBinding
     private var name: String? = null
 
     private lateinit var db: FirebaseFirestore
@@ -49,9 +55,9 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val curView = inflater.inflate(R.layout.fragment_profile, container, false)
+        binding = FragmentProfileBinding.inflate(inflater, container, false)
 
-        val user_name = curView.findViewById<TextView>(R.id.profile_user_name)
+        val user_name = binding.profileUserName
 
         val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
         name = sharedPreferences.getString("fullname", null)
@@ -60,13 +66,27 @@ class ProfileFragment : Fragment() {
             user_name.text = "${HomeViewModel.get()}"
         else user_name.text = name
 
-        val listView = curView.findViewById<ListView>(R.id.profile_list_event)
+        val listView = binding.profileListEvent
 
-        val adapter = EventAdapter(curView.context, array)
+        val adapter = EventAdapter(requireContext(), array)
 
         listView.adapter = adapter
 
-        return curView
+        val clickListener = View.OnClickListener { v ->
+            when (v) {
+                binding.editProfileButton -> {
+                    findNavController().navigate(R.id.action_profileFragment_to_editProfileFragment)
+                }
+                binding.profileSettingsButton -> {
+                    findNavController().navigate(R.id.action_profileFragment_to_settingFragment)
+                }
+            }
+        }
+
+        binding.editProfileButton.setOnClickListener(clickListener)
+        binding.profileSettingsButton.setOnClickListener(clickListener)
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,7 +94,7 @@ class ProfileFragment : Fragment() {
 
         db = FirebaseFirestore.getInstance()
 
-        val profile_img = view.findViewById<CircleImageView>(R.id.profile_image)
+        val profile_img = binding.profileImage
         val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
         val localFile = File(localFilePath)
 
@@ -88,11 +108,12 @@ class ProfileFragment : Fragment() {
         val sharedPreferences2 = view.context.getSharedPreferences("sharedPrefs", 0)
         val email = sharedPreferences2.getString("email", null)
 
-        val user_name = view.findViewById<TextView>(R.id.profile_user_name)
+        val user_name = binding.profileUserName
         val events_array: ArrayList<EventData> = arrayListOf()
         if(HomeViewModel.get().isNotBlank())
             user_name.text = "${HomeViewModel.get()}"
         else user_name.text = name
+        setUpUserRunInfo(view)
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val events = db.collection("events")
@@ -110,7 +131,7 @@ class ProfileFragment : Fragment() {
                         Log.d("Image_url", document.data.get("image_url").toString())
                         // Update the UI on the main thread
 
-                        var check = db.collection("events")
+                        db.collection("events")
                             .document(document.id)
                             .collection("participants")
                             .whereEqualTo("status", 1)
@@ -142,20 +163,20 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        val profile_image = view.findViewById<CircleImageView>(R.id.profile_image)
+        val profile_image = binding.profileImage
 
         profile_image.setOnClickListener {
             openGallery()
         }
 
-        view.findViewById<TextView>(R.id.save_profile_button).setOnClickListener {
+        binding.saveProfileButton.setOnClickListener {
             saveProfilePic()
 
-            view.findViewById<TextView>(R.id.save_profile_button).visibility = View.INVISIBLE
-            view.findViewById<TextView>(R.id.undo_profile_button).visibility = View.INVISIBLE
+            binding.saveProfileButton.visibility = View.INVISIBLE
+            binding.undoProfileButton.visibility = View.INVISIBLE
         }
 
-        view.findViewById<TextView>(R.id.undo_profile_button).setOnClickListener {
+        binding.undoProfileButton.setOnClickListener {
             val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
             val localFile = File(localFilePath)
 
@@ -166,39 +187,24 @@ class ProfileFragment : Fragment() {
                 .placeholder(R.drawable.thang_ngot)
                 .into(profile_img)
 
-            view.findViewById<TextView>(R.id.save_profile_button).visibility = View.INVISIBLE
-            view.findViewById<TextView>(R.id.undo_profile_button).visibility = View.INVISIBLE
-        }
-
-        val edit_profile_button = view.findViewById<ImageView>(R.id.edit_profile_button)
-
-        edit_profile_button.setOnClickListener {
-            //saveProfilePic()
+            binding.saveProfileButton.visibility = View.INVISIBLE
+            binding.undoProfileButton.visibility = View.INVISIBLE
         }
     }
-
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                openGallery()
-            } else {
-                // Handle permission denied
-            }
-        }
 
     private val getContentLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val selectedImageUri = result.data?.data
 
-                requireView().findViewById<TextView>(R.id.save_profile_button).visibility = View.VISIBLE
-                requireView().findViewById<TextView>(R.id.undo_profile_button).visibility = View.VISIBLE
+                binding.saveProfileButton.visibility = View.VISIBLE
+                binding.undoProfileButton.visibility = View.VISIBLE
 
                 Picasso.with(requireView().context)
                     .load(selectedImageUri)
                     .fit()
                     .centerCrop()
-                    .into(requireView().findViewById<CircleImageView>(R.id.profile_image))
+                    .into(binding.profileImage)
             }
         }
 
@@ -253,7 +259,7 @@ class ProfileFragment : Fragment() {
 
         Toast.makeText(context, "Profile updated", Toast.LENGTH_SHORT).show()
 
-        var imageView = requireView().findViewById<CircleImageView>(R.id.profile_image)
+        var imageView = binding.profileImage
 
         var bitmap = getBitmapFromView(imageView)
 
@@ -282,10 +288,26 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setUpEventAdapter(events_array: ArrayList<EventData>, curView: View) {
-        val listView = curView.findViewById<ListView>(R.id.profile_list_event)
+        val listView = binding.profileListEvent
 
         val adapter = EventAdapter(curView.context, events_array, true)
 
         listView.adapter = adapter
+    }
+    private fun setUpUserRunInfo(view: View)
+    {
+        val sharedPrefID = requireActivity().getSharedPreferences("sharedPrefID", 0)
+        var sumM = sharedPrefID.getLong("sumM", 0)
+        var sumCaloriesBurned = sharedPrefID.getLong("sumKcal", 0)
+        var sumTimeInMillis = sharedPrefID.getLong("sumHr", 0)
+
+        val sumKM = binding.sumKM
+        val sumHr = binding.sumHr
+        val sumKcal = binding.sumKcal
+
+        sumKM.text = "${sumM / 1000f}"
+        sumKcal.text = "$sumCaloriesBurned"
+        val hours = TimeUnit.MILLISECONDS.toHours(sumTimeInMillis)
+        sumHr.text = "$hours"
     }
 }
