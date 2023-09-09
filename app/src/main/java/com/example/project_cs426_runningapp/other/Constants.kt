@@ -26,4 +26,7 @@ object Constants {
     const val NOTIFICATION_CHANNEL_ID = "tracking_channel"
     const val NOTIFICATION_CHANNEL_NAME = "Tracking"
     const val NOTIFICATION_ID = 1
+
+    const val SPOTIFY_CLIENT_ID = "12b274aab0934f67942cba17bd6770c7"
+    const val SPOTIFY_REDIRECT_URI = "http://www.cs426.com/redirect"
 }
