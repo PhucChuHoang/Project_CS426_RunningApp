@@ -1,42 +1,34 @@
 package com.example.project_cs426_runningapp.fragments
 
 import android.Manifest
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import com.bumptech.glide.Glide
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.lifecycleScope
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.project_cs426_runningapp.R
+import com.example.project_cs426_runningapp.ViewModel.HomeViewModel
 import com.example.project_cs426_runningapp.databinding.FragmentHomeBinding
-import com.google.firebase.firestore.FirebaseFirestore
 import com.example.project_cs426_runningapp.other.Constants.REQUEST_CODE_LOCATION_PERMISSION
 import com.example.project_cs426_runningapp.other.TrackingUtility
 import com.example.project_cs426_runningapp.run.Run
 import com.example.project_cs426_runningapp.run.RunAdapter
-import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
-import com.example.project_cs426_runningapp.ViewModel.HomeViewModel
-import de.hdodenhof.circleimageview.CircleImageView
-import java.io.ByteArrayOutputStream
 import java.io.File
 
 class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
@@ -44,6 +36,11 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var db: FirebaseFirestore
     private var name: String? = null
     var runArray: ArrayList<Run> = arrayListOf()
+    // Declare SharedPreferences as class properties
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var sharedPref: SharedPreferences
+    private lateinit var sharedPrefID: SharedPreferences
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,7 +49,13 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         db = FirebaseFirestore.getInstance()
-        val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
+
+
+        // Initialize SharedPreferences
+        sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
+        sharedPref = requireActivity().getSharedPreferences("sharedPrefQ", 0)
+        sharedPrefID = requireActivity().getSharedPreferences("sharedPrefID", 0)
+
         name = sharedPreferences.getString("fullname", null)
         if(HomeViewModel.get().isNotBlank())
             binding.fullName.text = "Hello, ${HomeViewModel.get()}"
@@ -87,7 +90,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         binding.profileImage.setOnClickListener(clickListener)
         binding.setting.setOnClickListener(clickListener)
 
-        val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
         var email = sharedPreferences.getString("email", null)
         Log.d("email",email.toString())
             db.collection("aRun")
@@ -104,7 +106,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                         var caloriesBurned = document.data?.get("caloriesBurned") as Long
                         var emailInDoc = document.data?.get("email") as String
 
-                        val sharedPref = requireActivity().getSharedPreferences("sharedPrefQ", 0)
                         val encodedImage = sharedPref.getString("encodedImage$ID", "DEFAULT")
                         if (encodedImage != "DEFAULT") {
                             val imageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
@@ -157,7 +158,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                             Log.d("AdapterOnfail", "encodeed is not null, Start Adapter!")
                             val runAdapter = RunAdapter(runArray)
 
-                            val sharedPrefID = requireActivity().getSharedPreferences("sharedPrefID", 0)
                             val UserID = runArray[0].ID
                             with(sharedPrefID.edit()) {
                                 putLong("UserID", UserID)
@@ -227,7 +227,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                                 }
                                 else level.text = "Expert"
                                 Log.d("AdapterOnSuccess", "encodeed is not null, Start Adapter!")
-                                val sharedPrefID = requireActivity().getSharedPreferences("sharedPrefID", 0)
                                 val UserID = runArray[0].ID
                                 with(sharedPrefID.edit()) {
                                     putLong("UserID", UserID)
