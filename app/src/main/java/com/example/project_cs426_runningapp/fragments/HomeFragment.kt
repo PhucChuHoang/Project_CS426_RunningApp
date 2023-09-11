@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.TransitionInflater
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.project_cs426_runningapp.R
@@ -40,6 +41,12 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var sharedPref: SharedPreferences
     private lateinit var sharedPrefID: SharedPreferences
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val inflater = TransitionInflater.from(requireContext())
+        exitTransition = inflater.inflateTransition(R.transition.fade)
+    }
 
 
     override fun onCreateView(

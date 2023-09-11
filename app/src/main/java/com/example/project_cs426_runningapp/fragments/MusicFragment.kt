@@ -13,6 +13,7 @@ import android.widget.SeekBar
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.palette.graphics.Palette
+import androidx.transition.TransitionInflater
 import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentMusicBinding
 import com.spotify.android.appremote.api.ConnectionParams
@@ -26,6 +27,12 @@ class MusicFragment : Fragment() {
     private lateinit var binding: FragmentMusicBinding
     private var volumeSeekBar: SeekBar? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val inflater = TransitionInflater.from(requireContext())
+        exitTransition = inflater.inflateTransition(R.transition.fade)
+    }
+
     override fun onStart() {
         super.onStart()
         if (isSpotifyInstalled(requireContext())) {
@@ -37,7 +44,6 @@ class MusicFragment : Fragment() {
         } else {
             handleSpotifyNotInstalled()
         }
-
     }
 
     override fun onCreateView(

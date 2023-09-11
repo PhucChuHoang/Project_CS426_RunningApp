@@ -1,9 +1,7 @@
 package com.example.project_cs426_runningapp.fragments
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
 
@@ -14,6 +12,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionInflater
 import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentRunningBinding
 import com.example.project_cs426_runningapp.other.Constants.ACTION_PAUSE_SERVICE
@@ -24,7 +23,6 @@ import com.example.project_cs426_runningapp.other.Constants.POLYLINE_COLOR
 import com.example.project_cs426_runningapp.other.Constants.POLYLINE_WIDTH
 import com.example.project_cs426_runningapp.other.TrackingUtility
 import com.example.project_cs426_runningapp.run.Run
-import com.example.project_cs426_runningapp.run.RunAdapter
 import com.example.project_cs426_runningapp.services.Polyline
 import com.example.project_cs426_runningapp.services.TrackingService
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -32,11 +30,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.lang.Math.round
 import java.util.*
@@ -52,6 +45,11 @@ class RunningFragment : Fragment() {
     private var weight = 80
     private var curTimeInMillis = 0L
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val inflater = TransitionInflater.from(requireContext())
+        exitTransition = inflater.inflateTransition(R.transition.fade)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

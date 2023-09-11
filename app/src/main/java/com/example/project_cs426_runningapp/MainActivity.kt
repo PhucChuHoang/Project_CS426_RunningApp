@@ -13,7 +13,6 @@ import com.example.project_cs426_runningapp.databinding.ActivityOnboardingBindin
 import com.example.project_cs426_runningapp.other.Constants.ACTION_SHOW_TRACKING_FRAGMENT
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
-import org.checkerframework.checker.units.qual.s
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityOnboardingBinding
@@ -58,19 +57,10 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         val currentUser = auth.currentUser
-//        if(currentUser != null) {
-//            findNavController(R.id.nav_host_fragment_activity_home).navigate(R.id.action_onboardingFragment_to_homeFragment)
-//        }
+        if(currentUser != null) {
+            findNavController(R.id.nav_host_fragment_activity_home).navigate(R.id.action_onboardingFragment_to_homeFragment)
+        }
     }
-
-    private fun connected() {
-
-    }
-
-    override fun onStop() {
-        super.onStop()
-    }
-
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
