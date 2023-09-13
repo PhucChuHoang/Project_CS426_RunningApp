@@ -29,6 +29,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
+import java.io.ByteArrayOutputStream
 import java.io.File
 
 class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
@@ -40,7 +41,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var sharedPref: SharedPreferences
     private lateinit var sharedPrefID: SharedPreferences
-
+    private lateinit var sharedPrefDetailRun: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,7 +56,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
         sharedPref = requireActivity().getSharedPreferences("sharedPrefQ", 0)
         sharedPrefID = requireActivity().getSharedPreferences("sharedPrefID", 0)
-
+        sharedPrefDetailRun = requireActivity().getSharedPreferences("sharedPrefDetailRun", 0)
         name = sharedPreferences.getString("fullname", null)
         if(HomeViewModel.get().isNotBlank())
             binding.fullName.text = "Hello, ${HomeViewModel.get()}"
@@ -110,67 +111,9 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                         if (encodedImage != "DEFAULT") {
                             val imageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
                             val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-
                             var bmp = decodedImage
                             var run = Run(ID,bmp,timestamp,avgSpeedInKMH,distanceInMeters,timeInMillis,caloriesBurned,emailInDoc)
-                            if (bmp != null) runArray.add(run)
-                            runArray.sortByDescending { it.ID }
-                            var sumM : Long
-                            var sumKcal : Long
-                            var sumHr : Long
-                            var kmleft = binding.kmLeft
-                            var kmDone = binding.kmDone
-                            var progresss = binding.progress
-                            var level = binding.level
-                            sumM = 0
-                            sumKcal = 0
-                            sumHr = 0
-                            for (run in runArray)
-                            {
-                                sumM += run.distanceInMeters
-                                sumKcal += run.caloriesBurned
-                                sumHr += run.timeInMillis
-                            }
-                            var sumKM : Int
-                            sumKM = (sumM/1000f).toInt()
-                            if (sumKM > 100)
-                            {
-                                kmleft.text = "0 km left"
-                                kmDone.text = "$sumKM Km done"
-                                progresss.progress = 100
-                            }
-                            else
-                            {
-                                var valKmLeft = 10 - sumKM
-                                kmleft.text = "$valKmLeft km left"
-                                kmDone.text = "$sumKM Km done"
-                                progresss.progress = sumKM.toInt()
-                            }
-                            if (sumKM < 1)
-                            {
-                                level.text = "beginner"
-                            }
-                            else if (sumKM < 3)
-                            {
-                                level.text = "Specialist"
-                            }
-                            else level.text = "Expert"
-                            Log.d("AdapterOnfail", "encodeed is not null, Start Adapter!")
-                            val runAdapter = RunAdapter(runArray)
-
-                            val UserID = runArray[0].ID
-                            with(sharedPrefID.edit()) {
-                                putLong("UserID", UserID)
-                                putLong("sumM", sumM)
-                                putLong("sumKcal", sumKcal)
-                                putLong("sumHr", sumHr)
-                                apply()
-                            }
-                            Log.d("UserIDInHome","$UserID")
-                            val recyclerView: RecyclerView = binding.rvRuns
-                            var layoutManager = LinearLayoutManager(requireContext())
-                            recyclerView.layoutManager = layoutManager
-                            recyclerView.adapter = runAdapter
+                            setAdapter(run,runArray)
                         }
                         else {
                             val storage = Firebase.storage("gs://cs426-project.appspot.com")
@@ -183,80 +126,99 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                             runImageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener { byteArr ->
                                 var bmp = toBitmap(byteArr)
                                 var run = Run(ID,bmp,timestamp,avgSpeedInKMH,distanceInMeters,timeInMillis,caloriesBurned,emailInDoc)
-                                if (bmp != null) runArray.add(run)
-
-                                runArray.sortByDescending { it.ID }
-                                var sumM : Long
-                                var sumKcal : Long
-                                var sumHr : Long
-                                var kmleft = binding.kmLeft
-                                var kmDone = binding.kmDone
-                                var progresss = binding.progress
-                                var level = binding.level
-                                sumM = 0
-                                sumKcal = 0
-                                sumHr = 0
-                                for (run in runArray)
-                                {
-                                    sumM += run.distanceInMeters
-                                    sumKcal += run.caloriesBurned
-                                    sumHr += run.timeInMillis
-                                }
-                                var sumKM : Int
-                                sumKM = (sumM/1000f).toInt()
-                                if (sumKM > 100)
-                                {
-                                    kmleft.text = "0 km left"
-                                    kmDone.text = "$sumKM Km done"
-                                    progresss.progress = 100
-                                }
-                                else
-                                {
-                                    var valKmLeft = 10 - sumKM
-                                    kmleft.text = "$valKmLeft km left"
-                                    kmDone.text = "$sumKM Km done"
-                                    progresss.progress = sumKM.toInt()
-                                }
-                                if (sumKM < 1)
-                                {
-                                    level.text = "beginner"
-                                }
-                                else if (sumKM < 3)
-                                {
-                                    level.text = "Specialist"
-                                }
-                                else level.text = "Expert"
-                                Log.d("AdapterOnSuccess", "encodeed is not null, Start Adapter!")
-                                val UserID = runArray[0].ID
-                                with(sharedPrefID.edit()) {
-                                    putLong("UserID", UserID)
-                                    putLong("sumM", sumM)
-                                    putLong("sumKcal", sumKcal)
-                                    putLong("sumHr", sumHr)
-                                    apply()
-                                }
-                                Log.d("UserIDInHome","$UserID")
-                                val runAdapter = RunAdapter(runArray)
-                                val recyclerView: RecyclerView = binding.rvRuns
-                                var layoutManager = LinearLayoutManager(requireContext())
-                                recyclerView.layoutManager = layoutManager
-                                recyclerView.adapter = runAdapter
-                                // Data for "images/island.jpg" is returned, use this as needed
+                                setAdapter(run,runArray)
                             }
-
                                 .addOnFailureListener {
-
                                 }
                         }
-                    }
-                    }
+                    }}
 
                 .addOnFailureListener { exception ->
                     Log.w("TAG", "Error getting documents: ", exception)
                 }
-
     }
+    private fun setAdapter(run : Run, runArray: ArrayList<Run>)
+    {
+        if (run.Img != null) runArray.add(run)
+        runArray.sortByDescending { it.ID }
+        var sumM : Long
+        var sumKcal : Long
+        var sumHr : Long
+        var kmleft = binding.kmLeft
+        var kmDone = binding.kmDone
+        var progresss = binding.progress
+        var level = binding.level
+        sumM = 0
+        sumKcal = 0
+        sumHr = 0
+        for (run in runArray)
+        {
+            sumM += run.distanceInMeters
+            sumKcal += run.caloriesBurned
+            sumHr += run.timeInMillis
+        }
+        var sumKM : Int
+        sumKM = (sumM/1000f).toInt()
+        if (sumKM > 100)
+        {
+            kmleft.text = "0 km left"
+            kmDone.text = "$sumKM Km done"
+            progresss.progress = 100
+        }
+        else
+        {
+            var valKmLeft = 10 - sumKM
+            kmleft.text = "$valKmLeft km left"
+            kmDone.text = "$sumKM Km done"
+            progresss.progress = sumKM.toInt() * 10
+        }
+        if (sumKM < 1)
+        {
+            level.text = "beginner"
+        }
+        else if (sumKM < 3)
+        {
+            level.text = "Specialist"
+        }
+        else level.text = "Expert"
+        Log.d("AdapterOnfail", "encodeed is not null, Start Adapter!")
+        val runAdapter = RunAdapter(runArray)
 
+        val UserID = runArray[0].ID
+        with(sharedPrefID.edit()) {
+            putLong("UserID", UserID)
+            putLong("sumM", sumM)
+            putLong("sumKcal", sumKcal)
+            putLong("sumHr", sumHr)
+            apply()
+        }
+
+        Log.d("UserIDInHome","$UserID")
+        val recyclerView: RecyclerView = binding.rvRuns
+        var layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.layoutManager = layoutManager
+        recyclerView.adapter = runAdapter
+        runAdapter.setOnItemClickListener(object: RunAdapter.onItemClickListener{
+            override fun onItemClick(position: Int) {
+
+                Log.d("clicked", "clicked!")
+                val bitmap = runArray[position].Img
+                val baos = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+                val encodedImage = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT)
+                with(sharedPrefDetailRun.edit()) {
+                    putLong("timeInMillis", runArray[position].timeInMillis)
+                    putLong("caloriesBurned", runArray[position].caloriesBurned)
+                    putLong("distanceInMeters", runArray[position].distanceInMeters)
+                    putFloat("avgSpeedInKMH", runArray[position].avgSpeedInKMH.toFloat())
+                    putString("img", encodedImage)
+                    apply()
+                }
+                findNavController().navigate(R.id.action_homeFragment_to_detailRunningFragment)
+            }
+
+        })
+    }
     private fun setProfileImage() {
         val profile_img = binding.profileImage
         val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
