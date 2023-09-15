@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.ListView
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.project_cs426_runningapp.adapters.EventAdapter
 import com.example.project_cs426_runningapp.adapters.EventData
 import com.example.project_cs426_runningapp.R
@@ -44,6 +46,8 @@ class EventFragment : Fragment() {
         // Inflate the layout for this fragment
 
         binding = FragmentEventBinding.inflate(inflater, container, false)
+
+        binding.eventListView.layoutManager = LinearLayoutManager(requireContext())
 
         binding.eventEditButton.setOnClickListener {
             db.collection("registers")
@@ -210,7 +214,9 @@ class EventFragment : Fragment() {
     private fun setUpEventAdapter(events_array: ArrayList<EventData>, curView: View) {
         setUpEventImage(events_array.size)
 
-        val listView = curView.findViewById<ListView>(R.id.event_list_view)
+        val listView = curView.findViewById<RecyclerView>(R.id.event_list_view)
+
+        Log.d("Layout manager", "Layout setup")
 
         total_event = events_array.size
         val adapter = EventAdapter(curView.context, events_array)

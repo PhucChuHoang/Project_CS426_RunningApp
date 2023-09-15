@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.project_cs426_runningapp.R
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,17 +21,29 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 
 class EventAdapter(private val context: Context, private val dataSource: ArrayList<EventData>,
-                   private val profile_specific: Boolean = false) : BaseAdapter() {
-
-    private var inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                   private val profile_specific: Boolean = false): RecyclerView.Adapter<EventAdapter.ViewHolder>() {
 
     private lateinit var db: FirebaseFirestore
 
-    override fun getCount(): Int {
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+
+        val event_title = view.findViewById<TextView>(R.id.text_event_name)
+        val start_date = view.findViewById<TextView>(R.id.event_start_date)
+        val end_date = view.findViewById<TextView>(R.id.event_end_date)
+
+        val thumbnail = view.findViewById(R.id.event_thumbnail) as ImageView
+        val join_button = view.findViewById(R.id.join_challenge_button) as TextView
+
+        init {
+
+        }
+    }
+
+    override fun getItemCount(): Int {
         return dataSource.size
     }
 
-    override fun getItem(position: Int): Any {
+    private fun getItem(position: Int): Any {
         return dataSource[position]
     }
 
@@ -38,23 +51,21 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
         return position.toLong()
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val rowView: View = convertView ?: inflater.inflate(R.layout.event_list_view, parent, false)
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(viewGroup.context)
+            .inflate(R.layout.event_list_view, viewGroup, false)
 
-        val event_data = getItem(position) as EventData
+        return ViewHolder(view)
+    }
 
-        val event_title = rowView.findViewById<TextView>(R.id.text_event_name)
-        val start_date = rowView.findViewById<TextView>(R.id.event_start_date)
-        val end_date = rowView.findViewById<TextView>(R.id.event_end_date)
+    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        var event_data = getItem(position) as EventData
 
-        val thumbnail = rowView.findViewById(R.id.event_thumbnail) as ImageView
-        val join_button = rowView.findViewById(R.id.join_challenge_button) as TextView
+        viewHolder.event_title.text = event_data.event_name
+        viewHolder.start_date.text = "Start: " + event_data.start_date
+        viewHolder.end_date.text = "End: " + event_data.end_date
 
-        event_title.text = event_data.event_name
-        start_date.text = "Start: " + event_data.start_date
-        end_date.text = "End: " + event_data.end_date
-
-        addEventImage(rowView, thumbnail, event_data.image_name)
+        addEventImage(viewHolder.thumbnail, event_data.image_name)
 
         var emailArray = arrayListOf<String?>()
 
@@ -72,20 +83,20 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
                 for (document in documents) {
                     emailArray.add("${document.id}")
                 }
-                setJoin(emailArray, email, rowView, position)
+                setJoin(emailArray, email, viewHolder, position)
             }
             .addOnFailureListener { exception ->
                 Log.w("Error", "Error getting documents: ", exception)
             }
 
-        join_button.setOnClickListener {
-            if (join_button.text.toString() == "Join challenge") {
+        viewHolder.join_button.setOnClickListener {
+            if (viewHolder.join_button.text.toString() == "Join challenge") {
                 Log.d("Email", email.toString())
 
                 if (email != null && emailArray.indexOf(email) == -1) {
                     Log.d("Join", "Here")
-                    join_button.text = "Joined"
-                    join_button.setBackgroundResource(R.drawable.round_outline_gray)
+                    viewHolder.join_button.text = "Joined"
+                    viewHolder.join_button.setBackgroundResource(R.drawable.round_outline_gray)
 
                     db.collection("events")
                         .document(event_data.event_id)
@@ -109,15 +120,13 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
                 }
             }
         }
-
-        return rowView
     }
 
-    fun addEventImage(rowView: View, imageView: ImageView, position: String?) {
-        val localFilePath = File(rowView.context.filesDir, position).absolutePath
+    fun addEventImage(imageView: ImageView, position: String?) {
+        val localFilePath = File(context.filesDir, position).absolutePath
         val localFile = File(localFilePath)
 
-        Picasso.with(rowView.context)
+        Picasso.with(context)
             .load(localFile)
             .centerCrop()
             .fit()
@@ -148,21 +157,18 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
         }
     }
 
-     private fun setJoin(emailArray: ArrayList<String?>, email: String?, rowView: View, position: Int = 10) {
-        var join_button = rowView.findViewById(R.id.join_challenge_button) as TextView
-
+     private fun setJoin(emailArray: ArrayList<String?>, email: String?, viewHolder: ViewHolder, position: Int = 10) {
         if (emailArray.isNotEmpty() && emailArray.indexOf(email) != -1) {
-            Log.d("How tf are you here?", position.toString())
-            join_button.text = "Joined"
+            viewHolder.join_button.text = "Joined"
             if (profile_specific) {
-                join_button.text = "Withdraw"
+                viewHolder.join_button.text = "Withdraw"
             }
-            join_button.setBackgroundResource(R.drawable.round_outline_gray)
+            viewHolder.join_button.setBackgroundResource(R.drawable.round_outline_gray)
         }
         else {
             Log.d("Empty here " + position, "true")
-            join_button.text = "Join challenge"
-            join_button.setBackgroundResource(R.drawable.round_outline)
+            viewHolder.join_button.text = "Join challenge"
+            viewHolder.join_button.setBackgroundResource(R.drawable.round_outline)
         }
     }
     fun getBitmapFromView(view: View): Bitmap {
@@ -176,5 +182,5 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
 
 }
 
-public class EventData(var event_name: String, var joined: Boolean, var image_name: String?,
+class EventData(var event_name: String, var joined: Boolean, var image_name: String?,
                        var start_date: String?, var end_date: String?, var event_id: String)

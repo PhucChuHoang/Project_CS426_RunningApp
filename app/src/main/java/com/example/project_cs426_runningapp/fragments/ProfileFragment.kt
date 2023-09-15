@@ -33,6 +33,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.project_cs426_runningapp.adapters.EventAdapter
 import com.example.project_cs426_runningapp.adapters.EventData
 import com.example.project_cs426_runningapp.R
@@ -67,6 +68,7 @@ class ProfileFragment : Fragment() {
         else user_name.text = name
 
         val listView = binding.profileListEvent
+        listView.layoutManager = LinearLayoutManager(requireContext())
 
         val adapter = EventAdapter(requireContext(), array)
 
