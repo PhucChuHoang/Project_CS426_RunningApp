@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.detailRunningFragment">
+
+
+    <ImageView
+        android:id="@+id/detailImg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/onboarding_background"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"></ImageView>
+    <ImageView
+        android:id="@+id/return_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="45dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/return_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <RelativeLayout
+        android:id="@+id/clInnerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_marginBottom="70dp"
+        android:background="@drawable/round_outline"
+        android:backgroundTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Running time"
+            android:id="@+id/runningTime_text"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:textSize="15dp"
+            android:textColor="#5A5A5A"
+            ></TextView>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00:00:00"
+            android:textSize="25sp"
+            android:layout_below="@+id/runningTime_text"
+            android:layout_marginLeft="20dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            />
+        <ImageView
+            android:layout_marginTop="10dp"
+            android:id="@+id/running_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/running_icon"
+            android:layout_below="@+id/tvTimer"
+            android:layout_marginLeft="60dp"
+            ></ImageView>
+        <TextView
+            android:id="@+id/run_km"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10.9 km"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginLeft="50dp"
+            android:layout_below="@+id/running_icon"
+            ></TextView>
+        <ImageView
+            android:layout_marginTop="10dp"
+            android:id="@+id/fire_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/fire"
+            android:layout_below="@+id/tvTimer"
+            android:layout_centerHorizontal="true"
+            ></ImageView>
+        <TextView
+            android:id="@+id/run_kcal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="539 kcal"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@+id/fire_icon"
+            android:layout_centerHorizontal="true"
+            ></TextView>
+
+        <ImageView
+            android:layout_marginTop="10dp"
+            android:id="@+id/power_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/power_icon"
+            android:layout_below="@+id/tvTimer"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="60dp"
+            ></ImageView>
+        <TextView
+            android:id="@+id/run_velo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12.3 km/h"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="30dp"
+            android:layout_below="@+id/power_icon"
+            android:layout_centerHorizontal="true"
+            ></TextView>
+    </RelativeLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

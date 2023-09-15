@@ -42,7 +42,8 @@ class MainActivity : AppCompatActivity() {
                 || destination.id == R.id.registerFragment
                 || destination.id == R.id.settingFragment
                 || destination.id == R.id.editProfileFragment
-                || destination.id == R.id.forgotPasswordFragment) {
+                || destination.id == R.id.forgotPasswordFragment
+                || destination.id == R.id.detailRunningFragment) {
                 navView.visibility = View.GONE
             } else {
                 navView.visibility = View.VISIBLE
