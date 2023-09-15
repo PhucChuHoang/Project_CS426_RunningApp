@@ -39,6 +39,9 @@
         <action
             android:id="@+id/action_homeFragment_to_settingFragment"
             app:destination="@id/settingFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_detailRunningFragment"
+            app:destination="@id/detailRunningFragment" />
     </fragment>
     <fragment
         android:id="@+id/runningFragment"
@@ -138,4 +141,13 @@
         android:name="com.example.project_cs426_runningapp.fragments.AddEventFragment"
         android:label="fragment_add_event"
         tools:layout="@layout/fragment_add_event" />
+    <fragment
+        android:id="@+id/detailRunningFragment"
+        android:name="com.example.project_cs426_runningapp.fragments.detailRunningFragment"
+        android:label="fragment_detail_running"
+        tools:layout="@layout/fragment_detail_running">
+        <action
+            android:id="@+id/action_detailRunningFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
 </navigation>

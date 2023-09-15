@@ -21,11 +21,19 @@ import kotlin.collections.ArrayList
 
 class RunAdapter(private val dataSet: ArrayList<Run>) :
     RecyclerView.Adapter<RunAdapter.ViewHolder>() {
-    /**
-     * Provide a reference to the type of views that you are using
-     * (custom ViewHolder)
-     */
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+
+    private lateinit var mListener : onItemClickListener
+
+    interface onItemClickListener{
+        fun onItemClick(position: Int)
+
+    }
+    fun setOnItemClickListener(listener: onItemClickListener)
+    {
+        mListener = listener
+    }
+
+    class ViewHolder(view: View, listener: onItemClickListener) : RecyclerView.ViewHolder(view) {
         val ivRunImage : ImageView
         val tvDate : MaterialTextView
         val tvAvgSpeed : MaterialTextView
@@ -33,29 +41,27 @@ class RunAdapter(private val dataSet: ArrayList<Run>) :
         val tvTime : MaterialTextView
         val tvCalories : MaterialTextView
         init {
-            // Define click listener for the ViewHolder's View
             ivRunImage = view.findViewById(R.id.ivRunImage)
             tvDate = view.findViewById(R.id.tvDate)
             tvAvgSpeed = view.findViewById(R.id.tvAvgSpeed)
             tvDistance = view.findViewById(R.id.tvDistance)
             tvTime = view.findViewById(R.id.tvTime)
             tvCalories = view.findViewById(R.id.tvCalories)
+            view.setOnClickListener{
+                listener.onItemClick(adapterPosition)
+            }
         }
     }
 
-    // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.item_run, viewGroup, false)
-        return ViewHolder(view)
+        return ViewHolder(view,mListener)
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
-        // Get element from your dataset at this position and replace the
-        // contents of the view with that element
+
         Glide.with(viewHolder.ivRunImage.context).load(dataSet[position].Img).into(viewHolder.ivRunImage)
         val calendar = Calendar.getInstance().apply {
             timeInMillis = dataSet[position].timestamp
@@ -74,7 +80,6 @@ class RunAdapter(private val dataSet: ArrayList<Run>) :
         val caloriesBurned = "${dataSet[position].caloriesBurned} kcal"
         viewHolder.tvCalories.text = caloriesBurned
     }
-    // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = dataSet.size
 
 
