@@ -158,13 +158,17 @@ class AddEventFragment: Fragment() {
     }
 
     private fun addEventSuccess(event_name: String, position: Int, start_date: String, end_date: String) {
+        val sharedPreferences = requireContext().getSharedPreferences("sharedPrefs", 0)
+        var email = sharedPreferences.getString("email", null)
+
         val event = hashMapOf(
                 "event_name" to event_name,
                 "image_url" to "event_image_" + position + ".jpg",
                 "status" to 1,
                 "start_date" to start_date,
                 "end_date" to end_date,
-                "event_id" to "eid00" + position
+                "event_id" to "eid00" + position,
+                "admin" to email
             )
 
         db.collection("events")

@@ -1,29 +1,36 @@
 package com.example.project_cs426_runningapp.fragments
 
 import android.annotation.SuppressLint
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ListView
+import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.adapters.EventAdapter
 import com.example.project_cs426_runningapp.adapters.EventData
-import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentEventBinding
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.io.File
+
 
 class EventFragment : Fragment() {
     private lateinit var binding: FragmentEventBinding
@@ -34,7 +41,6 @@ class EventFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     @SuppressLint("Range")
@@ -191,12 +197,13 @@ class EventFragment : Fragment() {
                         var image_url = document.data?.get("image_url") as? String
                         var start_date = document.data?.get("start_date") as? String
                         var end_date = document.data?.get("end_date") as? String
+                        var admin = document.data?.get("admin") as? String
                         Log.d("Image_url", document.data?.get("image_url").toString())
                         // Update the UI on the main thread
 
                         events_array.add(
                             EventData(event_name, true, image_url,
-                                        start_date, end_date, "${document.id}")
+                                        start_date, end_date, "${document.id}", admin)
                         )
                     }
                     launch(Dispatchers.Main) {
@@ -212,32 +219,121 @@ class EventFragment : Fragment() {
     }
 
     private fun setUpEventAdapter(events_array: ArrayList<EventData>, curView: View) {
-        setUpEventImage(events_array.size)
+        setUpEventImage(events_array)
 
         val listView = curView.findViewById<RecyclerView>(R.id.event_list_view)
-
-        Log.d("Layout manager", "Layout setup")
 
         total_event = events_array.size
         val adapter = EventAdapter(curView.context, events_array)
 
+        //Log.d("Layout manager", "Layout setup")
+
+        val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.bindingAdapterPosition
+
+                val sharedPreferences = requireContext().getSharedPreferences("sharedPrefs", 0)
+                var email = sharedPreferences.getString("email", null)
+
+                adapter.notifyItemChanged(position)
+                Log.d("Current log in", email.toString())
+                if (email != null) {
+                    if (email.isNotEmpty() && email == events_array[position].admin) {
+                        Log.d("Remove admin", events_array[position].admin.toString())
+                        removeItemList(events_array, position)
+                    } else {
+                        Toast.makeText(requireContext(), "No permission", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
+                RecyclerViewSwipeDecorator.Builder(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+                    .addBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.light_red
+                        )
+                    )
+                    .addActionIcon(R.drawable.ic_delete)
+                    .create()
+                    .decorate()
+
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    val itemView = viewHolder.itemView
+                    val height = itemView.bottom.toFloat() - itemView.top.toFloat()
+                    val width = height / 3
+
+                    if (dX < 0) {
+
+                    }
+                } else {
+                    c.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX / 5, dY, actionState, isCurrentlyActive)
+            }
+        }
+
+        val itemTouchHelper = ItemTouchHelper(simpleItemTouchCallback)
+        itemTouchHelper.attachToRecyclerView(listView)
         listView.adapter = adapter
     }
 
-    private fun setUpEventImage(array_size: Int) {
-        val sharedPreferences = requireActivity().getSharedPreferences("total_event", 0)
-        val editor = sharedPreferences.edit()
-        editor.putString("total", array_size.toString())
-        editor.apply()
+    private fun removeItemList(events_array: ArrayList<EventData>, postion: Int) {
+        db.collection("events").document(events_array[postion].event_id)
+                   .delete()
+
+        events_array.removeAt(postion)
+        binding.eventListView.adapter?.notifyItemRemoved(postion)
+    }
+
+    private fun setUpEventImage(event_array: ArrayList<EventData>) {
         CoroutineScope(Dispatchers.Main).launch {
             val storageReference = Firebase.storage("gs://cs426-project.appspot.com").reference
 
-            for (i in 0..(array_size - 1)) {
-                Log.d("Events id", "eid" + i)
-                var profileRef = storageReference.child("events/eid" + i + ".jpg")
+            var p = ArrayList<Int>()
+            for (i in 0 ..(event_array.size - 1)) {
+                var sub = event_array[i].event_id.subSequence(5, event_array[i].event_id.length).toString()
+                p.add(Integer.parseInt(sub))
+            }
+            p.sort()
+
+            var nIndex = 0
+
+            for (i in 0 .. (p.size - 1)) {
+                if (p[i] != nIndex) {
+                    break
+                }
+                else {
+                    nIndex++
+                }
+            }
+
+            //Should have been new_event_id instead, but work just fine
+            val sharedPreferences = requireActivity().getSharedPreferences("total_event", 0)
+            val editor = sharedPreferences.edit()
+            editor.putString("total", nIndex.toString())
+            editor.apply()
+
+            for (i in 0..(event_array.size - 1)) {
+                //Log.d("Events id", "eid" + i)
+                var profileRef = storageReference.child("events/eid" + p[i] + ".jpg")
 
                 val localFilePath =
-                    File(binding.root.context.filesDir, "event_image_" + i + ".jpg").absolutePath
+                    File(binding.root.context.filesDir, "event_image_" + p[i] + ".jpg").absolutePath
 
                 val parentDir = File(localFilePath).parentFile
                 if (!parentDir.exists()) {

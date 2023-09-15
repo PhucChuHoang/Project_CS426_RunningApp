@@ -133,30 +133,6 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
             .into(imageView)
     }
 
-    private fun saveImage(rowView: View, position: Int) {
-        var thumbnail = rowView.findViewById<ImageView>(R.id.event_thumbnail)
-
-        //Comment out after push to storage
-        val storage = Firebase.storage("gs://cs426-project.appspot.com")
-        var storageRef = storage.reference
-
-        var eventRef = storageRef.child("events/" + "eid" + position + ".jpg")
-
-        var bitmap = getBitmapFromView(thumbnail)
-        val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-        val data = baos.toByteArray()
-
-        var uploadTask = eventRef.putBytes(data)
-        uploadTask.addOnFailureListener {
-            // Handle unsuccessful uploads
-        }.addOnSuccessListener { taskSnapshot ->
-            // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-            // ...
-            Log.d("Image upload to storage", "It's there bro")
-        }
-    }
-
      private fun setJoin(emailArray: ArrayList<String?>, email: String?, viewHolder: ViewHolder, position: Int = 10) {
         if (emailArray.isNotEmpty() && emailArray.indexOf(email) != -1) {
             viewHolder.join_button.text = "Joined"
@@ -183,4 +159,4 @@ class EventAdapter(private val context: Context, private val dataSource: ArrayLi
 }
 
 class EventData(var event_name: String, var joined: Boolean, var image_name: String?,
-                       var start_date: String?, var end_date: String?, var event_id: String)
+                       var start_date: String?, var end_date: String?, var event_id: String, var admin: String? = "")
