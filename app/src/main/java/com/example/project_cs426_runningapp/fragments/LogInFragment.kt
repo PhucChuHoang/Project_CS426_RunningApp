@@ -115,6 +115,8 @@ class LogInFragment : Fragment() {
                 // Handle any errors that occurred during the download
             }
 
+        clearEvent()
+
         CoroutineScope(Dispatchers.Main).launch {
             val documentSnapshot = db.collection("users")
                 .document(email)
@@ -129,6 +131,29 @@ class LogInFragment : Fragment() {
             }
             editor.apply()
             findNavController().navigate(R.id.action_logInFragment_to_homeFragment)
+        }
+    }
+
+    private fun clearEvent() {
+        val storageReference = Firebase.storage("gs://cs426-project.appspot.com").reference
+
+        for (i in 0..50) {
+
+            val localFilePath =
+                File(binding.root.context.filesDir, "event_image_" + i + ".jpg").absolutePath
+
+            val parentDir = File(localFilePath).parentFile
+            if (parentDir != null) {
+                if (!parentDir.exists()) {
+                    parentDir.mkdirs()
+                }
+            }
+
+            val localFile = File(localFilePath)
+
+            if (localFile.exists()) {
+                localFile.delete()
+            }
         }
     }
 

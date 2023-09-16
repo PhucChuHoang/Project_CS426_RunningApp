@@ -245,15 +245,13 @@ class EventFragment : Fragment() {
 
                 val localFile = File(localFilePath)
 
-                if (localFile.exists()) {
-                    localFile.delete()
+                if (!localFile.exists()) {
+                    profileRef.getFile(localFile)
+                        .addOnSuccessListener { taskSnapshot ->
+                        }
+                        .addOnFailureListener { exception ->
+                        }
                 }
-
-                profileRef.getFile(localFile)
-                    .addOnSuccessListener { taskSnapshot ->
-                    }
-                    .addOnFailureListener { exception ->
-                    }
             }
         }
     }
