@@ -2,7 +2,6 @@ package com.example.project_cs426_runningapp.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,17 +55,14 @@ class SettingFragment : Fragment() {
 
         for((index, switch) in switches.withIndex()) {
             switch.setOnCheckedChangeListener { _, isChecked ->
-                val switchName = switch.tag // You can use a tag to identify the switch
                 if (isChecked) {
                     // Switch is turned on
                     fileBody = fileBody.substring(0, index) + "1" + fileBody.substring(index + 1)
                     // Do something when the switch is turned on
-                    Log.d("TAG", "$switchName turned on")
                 } else {
                     // Switch is turned off
                     fileBody = fileBody.substring(0, index) + "0" + fileBody.substring(index + 1)
                     // Do something when the switch is turned off
-                    Log.d("TAG", "$switchName turned off")
                 }
             }
         }
@@ -87,18 +83,15 @@ class SettingFragment : Fragment() {
                     it.readText()
                 }
                 fileInputStream.close()
-                Log.d("TAG", "LOADED: $fileBody")
             } else {
                 val initialContent = "000000"
                 context?.openFileOutput(fileName, Context.MODE_PRIVATE).use { output ->
                     output?.write(initialContent.toByteArray())
                 }
                 fileBody = initialContent
-                Log.d("TAG", "File created with initial content: $initialContent")
             }
         } catch (e: Exception) {
             // Handle exceptions that may occur when working with files
-            Log.e("TAG", "Error loading file: ${e.message}", e)
         }
     }
 

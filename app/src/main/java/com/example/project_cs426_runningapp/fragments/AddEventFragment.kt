@@ -1,42 +1,29 @@
 package com.example.project_cs426_runningapp.fragments
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentResolver
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentAddEventBinding
-import com.google.android.material.datepicker.CalendarConstraints.DateValidator
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 import java.io.InputStream
-import java.io.OutputStream
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
-import java.util.Calendar
 import java.util.Date
 
 
@@ -51,7 +38,7 @@ class AddEventFragment: Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentAddEventBinding.inflate(inflater, container, false)
 
         val clickListener = View.OnClickListener { v ->
@@ -97,13 +84,13 @@ class AddEventFragment: Fragment() {
         }
 
         binding.addEventAddButton.setOnClickListener {
-            var start_month = binding.startMonthPicker.value
-            var start_day = binding.startDayPicker.value
-            var start_year = binding.startYearPicker.value
+            val start_month = binding.startMonthPicker.value
+            val start_day = binding.startDayPicker.value
+            val start_year = binding.startYearPicker.value
 
-            var end_month = binding.endMonthPicker.value
-            var end_day = binding.endDayPicker.value
-            var end_year = binding.endYearPicker.value
+            val end_month = binding.endMonthPicker.value
+            val end_day = binding.endDayPicker.value
+            val end_year = binding.endYearPicker.value
 
             if (binding.addEventEventNameEditText.text.toString().isEmpty()) {
                 createDialog("Add Error!!!", "Please enter event name")
@@ -120,7 +107,7 @@ class AddEventFragment: Fragment() {
             }
             else {
                 val sharedPreferences = requireContext().getSharedPreferences("total_event", 0)
-                var total = sharedPreferences.getString("total", null)?.toInt()
+                val total = sharedPreferences.getString("total", null)?.toInt()
                 if (total != null) {
                     saveImage(total)
                     addEventSuccess(binding.addEventEventNameEditText.text.toString(), total,
@@ -140,11 +127,11 @@ class AddEventFragment: Fragment() {
 
     private fun saveImage(position: Int) {
         val storage = Firebase.storage("gs://cs426-project.appspot.com")
-        var storageRef = storage.reference
+        val storageRef = storage.reference
 
-        var eventRef = storageRef.child("events/" + "eid" + position + ".jpg")
+        val eventRef = storageRef.child("events/" + "eid" + position + ".jpg")
 
-        var bitmap = uriToBitmap(requireActivity().contentResolver, resultImage)
+        val bitmap = uriToBitmap(requireActivity().contentResolver, resultImage)
         val baos = ByteArrayOutputStream()
         if (bitmap != null) {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
@@ -159,19 +146,17 @@ class AddEventFragment: Fragment() {
 
         val data = baos.toByteArray()
 
-        var uploadTask = eventRef.putBytes(data)
+        val uploadTask = eventRef.putBytes(data)
         uploadTask.addOnFailureListener {
-            // Handle unsuccessful uploads
-        }.addOnSuccessListener { taskSnapshot ->
-            // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-            // ...
-            Log.d("Image upload to storage", "It's there bro")
+
+        }.addOnSuccessListener {
+
         }
     }
 
     private fun addEventSuccess(event_name: String, position: Int, start_date: String, end_date: String) {
         val sharedPreferences = requireContext().getSharedPreferences("sharedPrefs", 0)
-        var email = sharedPreferences.getString("email", null)
+        val email = sharedPreferences.getString("email", null)
 
         val event = hashMapOf(
                 "event_name" to event_name,
@@ -217,7 +202,9 @@ class AddEventFragment: Fragment() {
             val current_date_string = sdf.format(Date())
             val current_date = sdf.parse(current_date_string)
 
-            return parsedDate.after(current_date)
+            if (parsedDate != null) {
+                return parsedDate.after(current_date)
+            }
         } catch (e: Exception) {
             return false
         }

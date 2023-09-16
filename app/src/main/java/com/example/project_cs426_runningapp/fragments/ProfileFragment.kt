@@ -2,21 +2,15 @@ package com.example.project_cs426_runningapp.fragments
 
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ListView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -24,11 +18,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.squareup.picasso.Picasso
-import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import androidx.fragment.app.Fragment
@@ -38,9 +30,7 @@ import com.example.project_cs426_runningapp.adapters.EventAdapter
 import com.example.project_cs426_runningapp.adapters.EventData
 import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.ViewModel.HomeViewModel
-import com.example.project_cs426_runningapp.databinding.FragmentEventBinding
 import com.example.project_cs426_runningapp.databinding.FragmentProfileBinding
-import com.example.project_cs426_runningapp.other.TrackingUtility
 import java.util.concurrent.TimeUnit
 
 class ProfileFragment : Fragment() {
@@ -54,7 +44,7 @@ class ProfileFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentProfileBinding.inflate(inflater, container, false)
 
@@ -64,7 +54,7 @@ class ProfileFragment : Fragment() {
         name = sharedPreferences.getString("fullname", null)
 
         if(HomeViewModel.get().isNotBlank())
-            user_name.text = "${HomeViewModel.get()}"
+            user_name.text = HomeViewModel.get()
         else user_name.text = name
 
         val listView = binding.profileListEvent
@@ -113,9 +103,9 @@ class ProfileFragment : Fragment() {
         val user_name = binding.profileUserName
         val events_array: ArrayList<EventData> = arrayListOf()
         if(HomeViewModel.get().isNotBlank())
-            user_name.text = "${HomeViewModel.get()}"
+            user_name.text = HomeViewModel.get()
         else user_name.text = name
-        setUpUserRunInfo(view)
+        setUpUserRunInfo()
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val events = db.collection("events")
@@ -130,7 +120,6 @@ class ProfileFragment : Fragment() {
                         val image_url = document.data.get("image_url") as? String
                         val start_date = document.data.get("start_date") as? String
                         val end_date = document.data.get("end_date") as? String
-                        Log.d("Image_url", document.data.get("image_url").toString())
                         // Update the UI on the main thread
 
                         db.collection("events")
@@ -139,7 +128,6 @@ class ProfileFragment : Fragment() {
                             .whereEqualTo("status", 1)
                             .get()
                             .addOnSuccessListener {documents2 ->
-                                Log.d("Event id profile", "${document.id}")
                                  for (document2 in documents2) {
                                     if (document2.id == email) {
                                         events_array.add(
@@ -218,31 +206,30 @@ class ProfileFragment : Fragment() {
     private fun saveProfilePic() {
         val storage = Firebase.storage("gs://cs426-project.appspot.com")
 
-        var storageRef = storage.reference
+        val storageRef = storage.reference
 
         val sharedPreferences = context?.getSharedPreferences("sharedPrefs", 0)
-        var email = sharedPreferences?.getString("email", null)
+        val email = sharedPreferences?.getString("email", null)
 
-        var profileRef = storageRef.child("images/" + email + "_profile.jpg")
+        val profileRef = storageRef.child("images/" + email + "_profile.jpg")
 
         Toast.makeText(context, "Profile updated", Toast.LENGTH_SHORT).show()
 
-        var imageView = binding.profileImage
+        val imageView = binding.profileImage
 
-        var bitmap = getBitmapFromView(imageView)
+        val bitmap = getBitmapFromView(imageView)
 
         val baos = ByteArrayOutputStream()
 
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val data = baos.toByteArray()
 
-        var uploadTask = profileRef.putBytes(data)
+        val uploadTask = profileRef.putBytes(data)
         uploadTask.addOnFailureListener {
             // Handle unsuccessful uploads
         }.addOnSuccessListener { taskSnapshot ->
             // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
             // ...
-            Log.d("Image upload", "It's up bro")
         }
     }
 
@@ -262,12 +249,12 @@ class ProfileFragment : Fragment() {
 
         listView.adapter = adapter
     }
-    private fun setUpUserRunInfo(view: View)
+    private fun setUpUserRunInfo()
     {
         val sharedPrefID = requireActivity().getSharedPreferences("sharedPrefID", 0)
-        var sumM = sharedPrefID.getLong("sumM", 0)
-        var sumCaloriesBurned = sharedPrefID.getLong("sumKcal", 0)
-        var sumTimeInMillis = sharedPrefID.getLong("sumHr", 0)
+        val sumM = sharedPrefID.getLong("sumM", 0)
+        val sumCaloriesBurned = sharedPrefID.getLong("sumKcal", 0)
+        val sumTimeInMillis = sharedPrefID.getLong("sumHr", 0)
 
         val sumKM = binding.sumKM
         val sumHr = binding.sumHr

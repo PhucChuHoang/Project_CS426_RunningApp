@@ -89,14 +89,16 @@ class LogInFragment : Fragment() {
 
         val storageReference = Firebase.storage("gs://cs426-project.appspot.com").reference
 
-        var profileRef = storageReference.child("images/" + email + "_profile.jpg")
+        val profileRef = storageReference.child("images/" + email + "_profile.jpg")
 
         val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
 
         // Create parent directories if they don't exist
         val parentDir = File(localFilePath).parentFile
-        if (!parentDir.exists()) {
-            parentDir.mkdirs()
+        if (parentDir != null) {
+            if (!parentDir.exists()) {
+                parentDir.mkdirs()
+            }
         }
 
         val localFile = File(localFilePath)

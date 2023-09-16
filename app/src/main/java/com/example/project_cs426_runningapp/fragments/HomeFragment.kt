@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.ViewModel.HomeViewModel
 import com.example.project_cs426_runningapp.databinding.FragmentHomeBinding
@@ -91,41 +89,40 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         binding.profileImage.setOnClickListener(clickListener)
         binding.setting.setOnClickListener(clickListener)
 
-        var email = sharedPreferences.getString("email", null)
-        Log.d("email",email.toString())
+        val email = sharedPreferences.getString("email", null)
+
             db.collection("aRun")
                 .whereEqualTo("email", email)
                 .get()
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
-                        val ID = document.data?.get("ID") as Long
-                        Log.d("IDget", "$ID")
-                        var timestamp = document.data?.get("timestamp") as Long
-                        var avgSpeedInKMH = document.data?.get("avgSpeedInKMH") as Double
-                        var distanceInMeters = document.data?.get("distanceInMeters") as Long
-                        var timeInMillis = document.data?.get("timeInMillis") as Long
-                        var caloriesBurned = document.data?.get("caloriesBurned") as Long
-                        var emailInDoc = document.data?.get("email") as String
+                        val ID = document.data.get("ID") as Long
+                        val timestamp = document.data.get("timestamp") as Long
+                        val avgSpeedInKMH = document.data.get("avgSpeedInKMH") as Double
+                        val distanceInMeters = document.data.get("distanceInMeters") as Long
+                        val timeInMillis = document.data.get("timeInMillis") as Long
+                        val caloriesBurned = document.data.get("caloriesBurned") as Long
+                        val emailInDoc = document.data.get("email") as String
 
                         val encodedImage = sharedPref.getString("encodedImage$ID", "DEFAULT")
                         if (encodedImage != "DEFAULT") {
                             val imageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
                             val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                            var bmp = decodedImage
-                            var run = Run(ID,bmp,timestamp,avgSpeedInKMH,distanceInMeters,timeInMillis,caloriesBurned,emailInDoc)
+                            val bmp = decodedImage
+                            val run = Run(ID,bmp,timestamp,avgSpeedInKMH,distanceInMeters,timeInMillis,caloriesBurned,emailInDoc)
                             setAdapter(run,runArray)
                         }
                         else {
                             val storage = Firebase.storage("gs://cs426-project.appspot.com")
-                            var storageRef = storage.reference
-                            var runImageRef = storageRef.child("runs/" + emailInDoc + "_" + "$ID" + ".PNG")
-                            var tmpID = ID.toInt()
+                            val storageRef = storage.reference
+                            val runImageRef = storageRef.child("runs/" + emailInDoc + "_" + "$ID" + ".PNG")
+                            val tmpID = ID.toInt()
                             if (emailInDoc == "quoclexx@gmail.com" && (tmpID == 1 || tmpID == 2 || tmpID == 3 || tmpID == 4 || tmpID == 5)) continue
                             if (timestamp == null || ID == null) continue
                             val ONE_MEGABYTE: Long = 1024 * 1024 * 5
                             runImageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener { byteArr ->
-                                var bmp = toBitmap(byteArr)
-                                var run = Run(ID,bmp,timestamp,avgSpeedInKMH,distanceInMeters,timeInMillis,caloriesBurned,emailInDoc)
+                                val bmp = toBitmap(byteArr)
+                                val run = Run(ID,bmp,timestamp,avgSpeedInKMH,distanceInMeters,timeInMillis,caloriesBurned,emailInDoc)
                                 setAdapter(run,runArray)
                             }
                                 .addOnFailureListener {
@@ -134,7 +131,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     }}
 
                 .addOnFailureListener { exception ->
-                    Log.w("TAG", "Error getting documents: ", exception)
                 }
     }
     private fun setAdapter(run : Run, runArray: ArrayList<Run>)
@@ -144,10 +140,10 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         var sumM : Long
         var sumKcal : Long
         var sumHr : Long
-        var kmleft = binding.kmLeft
-        var kmDone = binding.kmDone
-        var progresss = binding.progress
-        var level = binding.level
+        val kmleft = binding.kmLeft
+        val kmDone = binding.kmDone
+        val progresss = binding.progress
+        val level = binding.level
         sumM = 0
         sumKcal = 0
         sumHr = 0
@@ -157,7 +153,7 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             sumKcal += run.caloriesBurned
             sumHr += run.timeInMillis
         }
-        var sumKM : Int
+        val sumKM : Int
         sumKM = (sumM/1000f).toInt()
         if (sumKM > 100)
         {
@@ -167,10 +163,10 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }
         else
         {
-            var valKmLeft = 10 - sumKM
+            val valKmLeft = 10 - sumKM
             kmleft.text = "$valKmLeft km left"
             kmDone.text = "$sumKM Km done"
-            progresss.progress = sumKM.toInt() * 10
+            progresss.progress = sumKM * 10
         }
         if (sumKM < 1)
         {
@@ -181,7 +177,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             level.text = "Specialist"
         }
         else level.text = "Expert"
-        Log.d("AdapterOnfail", "encodeed is not null, Start Adapter!")
         val runAdapter = RunAdapter(runArray)
 
         val UserID = runArray[0].ID
@@ -193,15 +188,12 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             apply()
         }
 
-        Log.d("UserIDInHome","$UserID")
         val recyclerView: RecyclerView = binding.rvRuns
-        var layoutManager = LinearLayoutManager(requireContext())
+        val layoutManager = LinearLayoutManager(requireContext())
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = runAdapter
         runAdapter.setOnItemClickListener(object: RunAdapter.onItemClickListener{
             override fun onItemClick(position: Int) {
-
-                Log.d("clicked", "clicked!")
                 val bitmap = runArray[position].Img
                 val baos = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)

@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -70,7 +69,6 @@ class MusicFragment : Fragment() {
     }
 
     private fun handleSpotifyNotInstalled() {
-        Log.d("MusicFragment", "Spotify not installed")
         binding.spotifyNotInstalledTextView.visibility = View.VISIBLE
         binding.playerSkip.visibility = View.GONE
         binding.playerBack.visibility = View.GONE
@@ -93,7 +91,6 @@ class MusicFragment : Fragment() {
     }
 
     private fun updateUI(track: com.spotify.protocol.types.Track, isPlaying: Boolean) {
-        Log.d("Check", "updateUI: ${track.name}")
         binding.trackNameTextView.text = track.name
         binding.artistNameTextView.text = track.artist.name
         spotifyAppRemote?.imagesApi?.getImage(track.imageUri)

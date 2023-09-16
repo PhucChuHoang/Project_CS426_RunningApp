@@ -1,18 +1,13 @@
 package com.example.project_cs426_runningapp.fragments
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
-
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentRunningBinding
@@ -24,7 +19,6 @@ import com.example.project_cs426_runningapp.other.Constants.POLYLINE_COLOR
 import com.example.project_cs426_runningapp.other.Constants.POLYLINE_WIDTH
 import com.example.project_cs426_runningapp.other.TrackingUtility
 import com.example.project_cs426_runningapp.run.Run
-import com.example.project_cs426_runningapp.run.RunAdapter
 import com.example.project_cs426_runningapp.services.Polyline
 import com.example.project_cs426_runningapp.services.TrackingService
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -32,11 +26,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.lang.Math.round
 import java.util.*
@@ -57,7 +46,7 @@ class RunningFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentRunningBinding.inflate(inflater, container, false)
         return binding.root
@@ -95,16 +84,16 @@ class RunningFragment : Fragment() {
 
 
     private fun subscribeToObservers() {
-        TrackingService.isTracking.observe(viewLifecycleOwner, Observer {
+        TrackingService.isTracking.observe(viewLifecycleOwner, {
             updateTracking(it)
         })
 
-        TrackingService.pathPoints.observe(viewLifecycleOwner, Observer {
+        TrackingService.pathPoints.observe(viewLifecycleOwner, {
             pathPoints = it
             addLatestPolyline()
             moveCameraToUser()
         })
-        TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
+        TrackingService.timeRunInMillis.observe(viewLifecycleOwner, {
             curTimeInMillis = it
             val formattedTime = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
             binding.tvTimer.text = formattedTime
@@ -169,13 +158,12 @@ class RunningFragment : Fragment() {
             val avgSpeed = round((distanceInMeters / 1000.0) / (curTimeInMillis / 1000.0 / 60 / 60) * 10) / 10.0
             val dateTimestamp = Calendar.getInstance().timeInMillis
             val caloriesBurned = ((distanceInMeters / 1000f) * weight).toLong()
-            var email: String? = null
+            val email: String?
             val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
             email = sharedPreferences.getString("email", null)
             val sharedPrefID = requireActivity().getSharedPreferences("sharedPrefID", 0)
             var count = sharedPrefID.getLong("UserID", 0)
             count++
-            Log.d("UserIDInRun","$count")
             val run = Run(count,bmp, dateTimestamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned,email)
             run.saveRun()
             val sharedPref = requireActivity().getSharedPreferences("sharedPrefQ", 0)
@@ -226,33 +214,32 @@ class RunningFragment : Fragment() {
         Intent(requireContext(), TrackingService::class.java).also {
             it.action = action
             requireContext().startService(it)
-            Log.d("sendCommandToService1","sendCommandToService1")
         }
     override fun onResume() {
         super.onResume()
-        binding.mapView?.onResume()
+        binding.mapView.onResume()
     }
     override fun onStart() {
         super.onStart()
-        binding.mapView?.onStart()
+        binding.mapView.onStart()
     }
     override fun onStop() {
         super.onStop()
-        binding.mapView?.onStop()
+        binding.mapView.onStop()
     }
     override fun onPause() {
         super.onPause()
-        binding.mapView?.onPause()
+        binding.mapView.onPause()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        binding.mapView?.onLowMemory()
+        binding.mapView.onLowMemory()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        binding.mapView?.onSaveInstanceState(outState)
+        binding.mapView.onSaveInstanceState(outState)
     }
 
 }

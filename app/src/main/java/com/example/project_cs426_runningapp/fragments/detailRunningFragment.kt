@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.databinding.FragmentDetailRunningBinding
-import com.example.project_cs426_runningapp.databinding.FragmentOnboardingBinding
 import com.example.project_cs426_runningapp.other.TrackingUtility
 
 class detailRunningFragment : Fragment() {
@@ -33,11 +32,11 @@ class detailRunningFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var detailImg = binding.detailImg
-        var tvTimer  = binding.tvTimer
-        var run_km = binding.runKm
-        var run_kcal = binding.runKcal
-        var run_velo = binding.runVelo
+        val detailImg = binding.detailImg
+        val tvTimer  = binding.tvTimer
+        val run_km = binding.runKm
+        val run_kcal = binding.runKcal
+        val run_velo = binding.runVelo
         val encodedImage = sharedPrefDetailRun.getString("img", "DEFAULT")
         val time = sharedPrefDetailRun.getLong("timeInMillis", 0)
         val kcal = sharedPrefDetailRun.getLong("caloriesBurned", 0)

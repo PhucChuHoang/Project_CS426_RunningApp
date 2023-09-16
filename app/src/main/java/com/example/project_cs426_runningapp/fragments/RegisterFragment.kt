@@ -72,21 +72,6 @@ class RegisterFragment : Fragment() {
                     db.collection("users")
                         .document(email)
                         .set(user)
-
-                    // Initialize activity data
-                    val activity = hashMapOf(
-                        "ac_id" to "activity1",
-                        "distance" to 0,
-                        "screenShot" to 0,
-                        "duration" to 0,
-                        "calories" to 0,
-                    )
-                    db.collection("users")
-                        .document(email)
-                        .collection("activities")
-                        .document("activity1")
-                        .set(activity)
-
                     // Save user's name to SharedPreferences
                     CoroutineScope(Dispatchers.Main).launch {
                         saveUserName(fullname)

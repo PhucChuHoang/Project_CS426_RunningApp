@@ -2,12 +2,10 @@ package com.example.project_cs426_runningapp.fragments
 
 import android.os.Bundle
 import android.text.Editable
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
@@ -45,19 +43,18 @@ class EditProfileFragment : Fragment() {
 
         //fetch data
         CoroutineScope(Dispatchers.Main).launch {
-            var users = db.collection("users")
+            val users = db.collection("users")
                 .whereEqualTo("email", email)
                 .get()
                 .await()
             for (document in users) {
-                var name = document.data?.get("fullname") as String
-                var address = document.data?.get("address") as String
-                var country = document.data?.get("country") as String
-                var email = document.data?.get("email") as String
-                var nickName = document.data?.get("password") as String
-                var phoneNumber = document.data?.get("phone") as String
-                var genre = document.data?.get("sex") as String
-                Log.d("name", document.data?.get("fullname").toString())
+                val name = document.data?.get("fullname") as String
+                val address = document.data?.get("address") as String
+                val country = document.data?.get("country") as String
+                val email = document.data?.get("email") as String
+                val nickName = document.data?.get("password") as String
+                val phoneNumber = document.data?.get("phone") as String
+                val genre = document.data?.get("sex") as String
                 // Update the UI on the main thread
                 binding.FullNameInput.text = Editable.Factory.getInstance().newEditable(name ?: "")
                 binding.AddressInput.text =
@@ -72,7 +69,7 @@ class EditProfileFragment : Fragment() {
                 binding.GenreInput.text = Editable.Factory.getInstance().newEditable(genre ?: "")
             }
         }
-        val items = listOf<String>(
+        val items = listOf(
             "Afghanistan",
             "Albania",
             "Algeria",
@@ -313,17 +310,17 @@ class EditProfileFragment : Fragment() {
             "Zambia",
             "Zimbabwe",
             "Palestine"
-        );
+        )
 
         val autoComplete = binding.CountryInput
 
         val adapter = ArrayAdapter(requireContext(), R.layout.country_list, items)
         autoComplete.setAdapter(adapter)
 
-        autoComplete.setOnItemClickListener(AdapterView.OnItemClickListener { adapterView, view, i, l ->
+        autoComplete.setOnItemClickListener { adapterView, _, i, _ ->
             val itemSelected = adapterView.getItemAtPosition(i)
             Toast.makeText(requireContext(), "Item: $itemSelected", Toast.LENGTH_SHORT).show()
-        })
+        }
         binding.ProfileEditBack.setOnClickListener {
             findNavController().navigate(R.id.action_editProfileFragment_to_homeFragment)
         }
@@ -335,8 +332,6 @@ class EditProfileFragment : Fragment() {
             val sex = binding.GenreInput.text.toString()
             val address = binding.AddressInput.text.toString()
             HomeViewModel.set(fullname)
-            Log.d("EDIT MODEL", HomeViewModel.get())
-            Log.d("NAME", "NAME IS : $fullname")
             val user = hashMapOf(
                 "fullname" to fullname,
                 "email" to email,
@@ -360,15 +355,7 @@ class EditProfileFragment : Fragment() {
                         db.collection("users")
                             .document(email)
                             .set(user)
-                            .addOnSuccessListener {
-                                // The data was successfully written to Firestore
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("TAG", "Error writing document: $e")
-                            }
                         findNavController().navigate(R.id.action_editProfileFragment_to_homeFragment)
-                    }else{
-                        Log.e("ERROR", it.exception.toString())
                     }
                 }
             }
@@ -387,6 +374,6 @@ class EditProfileFragment : Fragment() {
             binding.textInputLayoutPassword.errorIconDrawable = null
             return false
         }
-        return true;
+        return true
     }
 }

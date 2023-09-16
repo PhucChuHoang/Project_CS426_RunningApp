@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,107 +58,7 @@ class EventFragment : Fragment() {
             db.collection("registers")
                 .whereEqualTo("status", 1)
                 .get()
-                .addOnSuccessListener { documents ->
-                    for (document in documents) {
-                        Log.d("Register", "")
-                    }
-                }
         }
-
-        binding.eventBellButton.setOnClickListener {
-//            val event0 = hashMapOf(
-//                "event_name" to "Wild Running 2023",
-//                "image_url" to "event_image_0.jpg",
-//                "status" to 1,
-//                "start_date" to "9/10/2023",
-//                "end_date" to "9/17/2023",
-//                "event_id" to "eid000"
-//            )
-//
-//            db.collection("events").document("eid000")
-//                .set(event0)
-//
-//            db.collection("events")
-//                .document("eid000")
-//                .collection("participants")
-//                .document("nmvinhdl1215@gmail.com").set(hashMapOf("status" to 0))
-//
-//            val event1 = hashMapOf(
-//                "event_name" to "Nike 2nd Open Cup",
-//                "image_url" to "event_image_1.jpg",
-//                "status" to 1,
-//                "start_date" to "10/2/2023",
-//                "end_date" to "10/5/2023",
-//                "event_id" to "eid001"
-//            )
-//
-
-//
-//            db.collection("events").document("eid001")
-//                .set(event1)
-//
-//            db.collection("events")
-//                .document("eid001")
-//                .collection("participants")
-//                .document("nmvinhdl1215@gmail.com").set(hashMapOf("status" to 0))
-//
-//            val event2 = hashMapOf(
-//                "event_name" to "MARTHE College Training Camp",
-//                "image_url" to "event_image_2.jpg",
-//                "status" to 1,
-//                "start_date" to "9/9/2023",
-//                "end_date" to "11/9/2023",
-//                "event_id" to "eid002"
-//            )
-//
-//            db.collection("events").document("eid002")
-//                .set(event2)
-//
-//            db.collection("events")
-//                .document("eid002")
-//                .collection("participants")
-//                .document("nmvinhdl1215@gmail.com").set(hashMapOf("status" to 0))
-//
-//            val event3 = hashMapOf(
-//                "event_name" to "Vitafield Green Marathon",
-//                "image_url" to "event_image_3.jpg",
-//                "status" to 1,
-//                "start_date" to "11/17/2023",
-//                "end_date" to "11/17/2023",
-//                "event_id" to "eid003"
-//            )
-//
-//            db.collection("events").document("eid003")
-//                .set(event3)
-//
-//            db.collection("events")
-//                .document("eid003")
-//                .collection("participants")
-//                .document("nmvinhdl1215@gmail.com").set(hashMapOf("status" to 0))
-//
-//            val event4 = hashMapOf(
-//                "event_name" to "Race for Life Marathon",
-//                "image_url" to "event_image_4.jpg",
-//                "status" to 1,
-//                "start_date" to "1/23/2024",
-//                "end_date" to "11/23/2024",
-//                "event_id" to "eid004"
-//            )
-//
-//            db.collection("events").document("eid004")
-//                .set(event4)
-//
-//            db.collection("events")
-//                .document("eid004")
-//                .collection("participants")
-//                .document("nmvinhdl1215@gmail.com").set(hashMapOf("status" to 0))
-
-//            for (i in 0..0) {
-//                db.collection("events").document("eid00" + i)
-//                    .delete()
-//            }
-        }
-
         return binding.root
     }
 
@@ -180,11 +79,11 @@ class EventFragment : Fragment() {
         db = FirebaseFirestore.getInstance()
 
         //Get events list
-        var events_array: ArrayList<EventData> = arrayListOf()
+        val events_array: ArrayList<EventData> = arrayListOf()
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
-                var events = db.collection("events")
+                val events = db.collection("events")
                     .whereEqualTo("status", 1)
                     .get()
                     .await()
@@ -193,17 +92,16 @@ class EventFragment : Fragment() {
                 if (!events.isEmpty) {
                     for (document in events) {
 
-                        var event_name = document.data?.get("event_name") as String
-                        var image_url = document.data?.get("image_url") as? String
-                        var start_date = document.data?.get("start_date") as? String
-                        var end_date = document.data?.get("end_date") as? String
-                        var admin = document.data?.get("admin") as? String
-                        Log.d("Image_url", document.data?.get("image_url").toString())
+                        val event_name = document.data.get("event_name") as String
+                        val image_url = document.data.get("image_url") as? String
+                        val start_date = document.data.get("start_date") as? String
+                        val end_date = document.data.get("end_date") as? String
+                        val admin = document.data.get("admin") as? String
                         // Update the UI on the main thread
 
                         events_array.add(
                             EventData(event_name, true, image_url,
-                                        start_date, end_date, "${document.id}", admin)
+                                        start_date, end_date, document.id, admin)
                         )
                     }
                     launch(Dispatchers.Main) {
@@ -238,13 +136,11 @@ class EventFragment : Fragment() {
                 val position = viewHolder.bindingAdapterPosition
 
                 val sharedPreferences = requireContext().getSharedPreferences("sharedPrefs", 0)
-                var email = sharedPreferences.getString("email", null)
+                val email = sharedPreferences.getString("email", null)
 
                 adapter.notifyItemChanged(position)
-                Log.d("Current log in", email.toString())
                 if (email != null) {
                     if (email.isNotEmpty() && email == events_array[position].admin) {
-                        Log.d("Remove admin", events_array[position].admin.toString())
                         removeItemList(events_array, position)
                     } else {
                         Toast.makeText(requireContext(), "No permission", Toast.LENGTH_SHORT).show()
@@ -272,15 +168,7 @@ class EventFragment : Fragment() {
                     .create()
                     .decorate()
 
-                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                    val itemView = viewHolder.itemView
-                    val height = itemView.bottom.toFloat() - itemView.top.toFloat()
-                    val width = height / 3
-
-                    if (dX < 0) {
-
-                    }
-                } else {
+                if (actionState != ItemTouchHelper.ACTION_STATE_SWIPE) {
                     c.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
                 }
                 super.onChildDraw(c, recyclerView, viewHolder, dX / 5, dY, actionState, isCurrentlyActive)
@@ -303,11 +191,10 @@ class EventFragment : Fragment() {
     }
 
     private fun findNextIndex(event_array: ArrayList<EventData>) {
-        var p = ArrayList<Int>()
+        val p = ArrayList<Int>()
         for (i in 0 ..(event_array.size - 1)) {
-            var sub = event_array[i].event_id.subSequence(5, event_array[i].event_id.length).toString()
+            val sub = event_array[i].event_id.subSequence(5, event_array[i].event_id.length).toString()
             p.add(Integer.parseInt(sub))
-            Log.d("Value", p[i].toString())
         }
         p.sort()
 
@@ -322,7 +209,6 @@ class EventFragment : Fragment() {
             }
         }
 
-        Log.d("Current index", nIndex.toString())
 
         //Should have been new_event_id instead, but work just fine
         val sharedPreferences = requireActivity().getSharedPreferences("total_event", 0)
@@ -337,23 +223,24 @@ class EventFragment : Fragment() {
 
             findNextIndex(event_array)
 
-            var p = ArrayList<Int>()
+            val p = ArrayList<Int>()
             for (i in 0 ..(event_array.size - 1)) {
-                var sub = event_array[i].event_id.subSequence(5, event_array[i].event_id.length).toString()
+                val sub = event_array[i].event_id.subSequence(5, event_array[i].event_id.length).toString()
                 p.add(Integer.parseInt(sub))
             }
             p.sort()
 
             for (i in 0..(event_array.size - 1)) {
-                //Log.d("Events id", "eid" + i)
-                var profileRef = storageReference.child("events/eid" + p[i] + ".jpg")
+                val profileRef = storageReference.child("events/eid" + p[i] + ".jpg")
 
                 val localFilePath =
                     File(binding.root.context.filesDir, "event_image_" + p[i] + ".jpg").absolutePath
 
                 val parentDir = File(localFilePath).parentFile
-                if (!parentDir.exists()) {
-                    parentDir.mkdirs()
+                if (parentDir != null) {
+                    if (!parentDir.exists()) {
+                        parentDir.mkdirs()
+                    }
                 }
 
                 val localFile = File(localFilePath)
