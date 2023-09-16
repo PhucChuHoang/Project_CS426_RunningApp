@@ -86,6 +86,9 @@ dependencies {
 
     //palette for getting dominant image color
     implementation 'androidx.palette:palette-ktx:1.0.0'
+
+    //swipe
+    implementation 'it.xabaras.android:recyclerview-swipedecorator:1.4'
 }
 kapt {
     correctErrorTypes = true

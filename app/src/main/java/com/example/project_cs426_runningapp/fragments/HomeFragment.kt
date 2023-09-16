@@ -226,8 +226,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
         Glide.with(this)
             .load(localFile)
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
             .placeholder(R.drawable.thang_ngot)
             .into(profile_img)
     }

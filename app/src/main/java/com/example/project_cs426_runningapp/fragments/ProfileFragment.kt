@@ -33,6 +33,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.project_cs426_runningapp.adapters.EventAdapter
 import com.example.project_cs426_runningapp.adapters.EventData
 import com.example.project_cs426_runningapp.R
@@ -67,6 +68,7 @@ class ProfileFragment : Fragment() {
         else user_name.text = name
 
         val listView = binding.profileListEvent
+        listView.layoutManager = LinearLayoutManager(requireContext())
 
         val adapter = EventAdapter(requireContext(), array)
 
@@ -211,40 +213,6 @@ class ProfileFragment : Fragment() {
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore. Images.Media.EXTERNAL_CONTENT_URI)
         getContentLauncher.launch(intent)
-    }
-
-    override fun onStop() {
-        super.onStop()
-
-        val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
-        var email = sharedPreferences.getString("email", null)
-
-        val storageReference = Firebase.storage("gs://cs426-project.appspot.com").reference
-
-        var profileRef = storageReference.child("images/" + email + "_profile.jpg")
-
-        val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
-
-        // Create parent directories if they don't exist
-        val parentDir = File(localFilePath).parentFile
-        if (!parentDir.exists()) {
-            parentDir.mkdirs()
-        }
-
-        val localFile = File(localFilePath)
-
-        if (localFile.exists()) {
-            // If it exists, delete it
-            localFile.delete()
-        }
-
-        profileRef.getFile(localFile)
-            .addOnSuccessListener { taskSnapshot ->
-                Log.d("On stop email", email.toString())
-            }
-            .addOnFailureListener { exception ->
-                // Handle any errors that occurred during the download
-            }
     }
 
     private fun saveProfilePic() {

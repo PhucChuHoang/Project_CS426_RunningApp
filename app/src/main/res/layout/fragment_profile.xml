@@ -267,12 +267,12 @@
 
     </LinearLayout>
 
-    <ListView
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="70dp"
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/profile_list_event"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </ListView>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="70dp">
+    </androidx.recyclerview.widget.RecyclerView>
 
 </LinearLayout>
