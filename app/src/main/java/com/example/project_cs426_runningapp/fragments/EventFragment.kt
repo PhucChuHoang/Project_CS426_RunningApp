@@ -245,14 +245,15 @@ class EventFragment : Fragment() {
 
                 val localFile = File(localFilePath)
 
-                if (!localFile.exists()) {
-                    profileRef.getFile(localFile)
-                        .addOnSuccessListener { taskSnapshot ->
-                        }
-                        .addOnFailureListener { exception ->
-                            // Handle any errors that occurred during the download
-                        }
+                if (localFile.exists()) {
+                    localFile.delete()
                 }
+
+                profileRef.getFile(localFile)
+                    .addOnSuccessListener { taskSnapshot ->
+                    }
+                    .addOnFailureListener { exception ->
+                    }
             }
         }
     }
