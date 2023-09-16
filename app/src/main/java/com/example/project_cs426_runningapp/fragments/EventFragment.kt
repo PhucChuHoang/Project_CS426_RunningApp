@@ -298,11 +298,44 @@ class EventFragment : Fragment() {
 
         events_array.removeAt(postion)
         binding.eventListView.adapter?.notifyItemRemoved(postion)
+
+        findNextIndex(events_array)
+    }
+
+    private fun findNextIndex(event_array: ArrayList<EventData>) {
+        var p = ArrayList<Int>()
+        for (i in 0 ..(event_array.size - 1)) {
+            var sub = event_array[i].event_id.subSequence(5, event_array[i].event_id.length).toString()
+            p.add(Integer.parseInt(sub))
+            Log.d("Value", p[i].toString())
+        }
+        p.sort()
+
+        var nIndex = 0
+
+        for (i in 0 .. (p.size - 1)) {
+            if (p[i] != nIndex) {
+                break
+            }
+            else {
+                nIndex++
+            }
+        }
+
+        Log.d("Current index", nIndex.toString())
+
+        //Should have been new_event_id instead, but work just fine
+        val sharedPreferences = requireActivity().getSharedPreferences("total_event", 0)
+        val editor = sharedPreferences.edit()
+        editor.putString("total", nIndex.toString())
+        editor.apply()
     }
 
     private fun setUpEventImage(event_array: ArrayList<EventData>) {
         CoroutineScope(Dispatchers.Main).launch {
             val storageReference = Firebase.storage("gs://cs426-project.appspot.com").reference
+
+            findNextIndex(event_array)
 
             var p = ArrayList<Int>()
             for (i in 0 ..(event_array.size - 1)) {
@@ -310,23 +343,6 @@ class EventFragment : Fragment() {
                 p.add(Integer.parseInt(sub))
             }
             p.sort()
-
-            var nIndex = 0
-
-            for (i in 0 .. (p.size - 1)) {
-                if (p[i] != nIndex) {
-                    break
-                }
-                else {
-                    nIndex++
-                }
-            }
-
-            //Should have been new_event_id instead, but work just fine
-            val sharedPreferences = requireActivity().getSharedPreferences("total_event", 0)
-            val editor = sharedPreferences.edit()
-            editor.putString("total", nIndex.toString())
-            editor.apply()
 
             for (i in 0..(event_array.size - 1)) {
                 //Log.d("Events id", "eid" + i)

@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -27,7 +28,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.io.InputStream
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -116,7 +121,6 @@ class AddEventFragment: Fragment() {
             else {
                 val sharedPreferences = requireContext().getSharedPreferences("total_event", 0)
                 var total = sharedPreferences.getString("total", null)?.toInt()
-                Log.d("Total", total.toString())
                 if (total != null) {
                     saveImage(total)
                     addEventSuccess(binding.addEventEventNameEditText.text.toString(), total,
@@ -145,6 +149,14 @@ class AddEventFragment: Fragment() {
         if (bitmap != null) {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         }
+
+        val localFilePath =
+            File(binding.root.context.filesDir, "event_image_" + position + ".jpg").absolutePath
+        val localFile = File(localFilePath)
+        if (localFile.exists()) {
+            localFile.delete()
+        }
+
         val data = baos.toByteArray()
 
         var uploadTask = eventRef.putBytes(data)
