@@ -233,6 +233,36 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+
+        val sharedPreferences = requireActivity().getSharedPreferences("sharedPrefs", 0)
+        var email = sharedPreferences.getString("email", null)
+
+        val storageReference = Firebase.storage("gs://cs426-project.appspot.com").reference
+
+        var profileRef = storageReference.child("images/" + email + "_profile.jpg")
+
+        val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
+
+        val parentDir = File(localFilePath).parentFile
+        if (!parentDir.exists()) {
+            parentDir.mkdirs()
+        }
+
+        val localFile = File(localFilePath)
+
+        if (localFile.exists()) {
+            localFile.delete()
+        }
+
+        profileRef.getFile(localFile)
+            .addOnSuccessListener { taskSnapshot ->
+            }
+            .addOnFailureListener { exception ->
+            }
+    }
+
     fun getBitmapFromView(view: View): Bitmap {
         val bitmap = Bitmap.createBitmap(
             view.width, view.height, Bitmap.Config.ARGB_8888

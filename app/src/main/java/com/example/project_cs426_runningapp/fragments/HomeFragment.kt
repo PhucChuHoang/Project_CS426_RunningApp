@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.project_cs426_runningapp.R
 import com.example.project_cs426_runningapp.ViewModel.HomeViewModel
 import com.example.project_cs426_runningapp.databinding.FragmentHomeBinding
@@ -90,7 +91,6 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         binding.setting.setOnClickListener(clickListener)
 
         val email = sharedPreferences.getString("email", null)
-
             db.collection("aRun")
                 .whereEqualTo("email", email)
                 .get()
@@ -212,12 +212,16 @@ class HomeFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         })
     }
     private fun setProfileImage() {
-        val profile_img = binding.profileImage
         val localFilePath = File(requireContext().filesDir, "local_image.jpg").absolutePath
+
         val localFile = File(localFilePath)
+
+        val profile_img = binding.profileImage
 
         Glide.with(this)
             .load(localFile)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
             .placeholder(R.drawable.thang_ngot)
             .into(profile_img)
     }

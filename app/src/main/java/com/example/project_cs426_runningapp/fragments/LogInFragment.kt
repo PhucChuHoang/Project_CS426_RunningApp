@@ -112,7 +112,6 @@ class LogInFragment : Fragment() {
             .addOnSuccessListener { taskSnapshot ->
             }
             .addOnFailureListener { exception ->
-                // Handle any errors that occurred during the download
             }
 
         clearEvent()
